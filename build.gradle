@@ -4,22 +4,16 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
+apply plugin: 'io.spring.dependency-management'
+
 group = 'org.example'
 version = '0.0.1-SNAPSHOT'
 
 jar {
     archiveClassifier=''
-    from {
-        'src/main/resource/static'
-    }
+    enabled = false
 }
 
-task customJar(type: Jar) {
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-        'src/main/resources/static'
-    }
-}
 
 java {
     toolchain {

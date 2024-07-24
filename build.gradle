@@ -7,6 +7,19 @@ plugins {
 group = 'org.example'
 version = '0.0.1-SNAPSHOT'
 
+jar {
+    from {
+        'src/main/resource/static'
+    }
+}
+
+task customJar(type: Jar) {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        'src/main/resources/static'
+    }
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)

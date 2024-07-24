@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 
@@ -16,9 +17,11 @@ public class AngularUrlFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        boolean matchUrl = request.getRequestURI().contains(MAIN_PAGE) || request.getRequestURI().contains(ADD_CONDITION);
+        boolean matchUrl = request.getRequestURI().equals(MAIN_PAGE) || request.getRequestURI().equals(ADD_CONDITION);
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .replacePath(null).replaceQuery(null).fragment(null).build().toUriString();
         if (matchUrl) {
-            response.sendRedirect(request.getContextPath() + MAIN_PAGE);
+            response.sendRedirect(baseUrl);
             return;
         }
         filterChain.doFilter(request, response);

@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: entable-be
+server:
+  port: 8082

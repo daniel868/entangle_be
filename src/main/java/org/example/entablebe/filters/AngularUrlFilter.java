@@ -1,4 +1,4 @@
-package org.example.entablebe.config;
+package org.example.entablebe.filters;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

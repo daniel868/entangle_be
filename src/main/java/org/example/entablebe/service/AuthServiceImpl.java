@@ -37,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
         userEntangle.setUsername(registerRequest.getUsername());
         userEntangle.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         userEntangle.setEmail(registerRequest.getEmail());
+        userEntangle.setInfo(mapUserInfo(registerRequest));
 
         UserEntangle savedUser = userRepository.save(userEntangle);
 
@@ -45,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String loginUser(LoginRequest loginRequest) {
-        logger.debug("startLogin - with and username: {}", loginRequest.getUsername());
+        logger.debug("startLogin - with username: {}", loginRequest.getUsername());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
         );
@@ -54,5 +55,22 @@ public class AuthServiceImpl implements AuthService {
             return jwtService.generateToken(new HashMap<>(), existingUser);
         }
         throw new UsernameNotFoundException("Username or password is incorrect");
+    }
+
+    private String mapUserInfo(RegisterRequest registerRequest) {
+        StringBuilder sb = new StringBuilder();
+        if (!registerRequest.getCompetences().isEmpty()) {
+            sb.append("competences:{");
+            registerRequest.getCompetences()
+                    .forEach(competence -> sb.append(competence).append(";"));
+            sb.append("} ");
+        }
+        if (!registerRequest.getQualification().isEmpty()){
+            sb.append("qualifications:{");
+            registerRequest.getQualification()
+                    .forEach(qualification -> sb.append(qualification).append(";"));
+            sb.append("}");
+        }
+        return sb.isEmpty() ? null : sb.toString().trim();
     }
 }

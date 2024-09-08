@@ -1,6 +1,12 @@
 spring:
   application:
     name: entable-be
+  h2:
+    console:
+      enabled: true
+  jpa:
+    show-sql: true
+    generate-ddl: true
 server:
   port: 8082
 
@@ -13,3 +19,4 @@ logging:
     org:
       example:
         entablebe*: debug
+

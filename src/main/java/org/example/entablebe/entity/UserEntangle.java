@@ -23,6 +23,7 @@ public class UserEntangle implements UserDetails {
     private String password;
     private String email;
 
+    private String info;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: entable-be
+  jpa:
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: ${DATABASE_URL}
+    driver-class-name: org.postgresql.Driver
+server:
+  port: 8082
+
+jwt:
+  secret:
+    key: qE0lktO7x3ldlBV/FZwl/wXOHPfGxk4v4P8Fo/SAHGkuDYJN21FEqFmpGfg5+oRJ7X/OWmRbT4x9/jEMBLMVRjM0EHrorSWKmVtD4BHrsSn0jQjVRP39JrQUNuGWXvRBBOvpG5isMhQqWvSjfdweWjID+owGqCL5ygPiZp6MR8IJRVviHWwRcxvz7xGZrdPekLlBLU94nFKUIuK/Ab5M2FnjpdJlNHPvwr8OCtelyx1G8mt/deQ8gpidU/bF65QE3Jdg3xHTL8SB3WQFKrKcQg+roUams5Sj/bACsr+VYkT3nCFwwY+axNaWn6C1kxLfz3572Ygag0Ij+UfN538oYV7KCfR5pOM3sE/3RTzuzQQ=
+
+logging:
+  level:
+    org:
+      example:
+        entablebe*: debug

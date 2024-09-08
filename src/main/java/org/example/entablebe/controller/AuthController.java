@@ -30,6 +30,7 @@ public class AuthController {
         Map<String, Object> response = new HashMap<>();
         String token = authService.registerUser(registerRequest);
         response.put("token", token);
+        response.put("username", registerRequest.getUsername());
         return response;
     }
 
@@ -40,6 +41,7 @@ public class AuthController {
         Map<String, Object> response = new HashMap<>();
         String token = authService.loginUser(loginRequest);
         response.put("token", token);
+        response.put("username", loginRequest.getUsername());
         return response;
     }
 

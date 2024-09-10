@@ -1,5 +1,6 @@
 package org.example.entablebe.controller;
 
+import org.example.entablebe.pojo.auth.AuthenticateResponse;
 import org.example.entablebe.pojo.auth.LoginRequest;
 import org.example.entablebe.pojo.auth.RegisterRequest;
 import org.example.entablebe.service.AuthService;
@@ -26,23 +27,13 @@ public class AuthController {
     @PostMapping("/register")
     public Object registerNewUser(@RequestBody RegisterRequest registerRequest) {
         Jsoup.clean(registerRequest.toString(), Safelist.basic());
-
-        Map<String, Object> response = new HashMap<>();
-        String token = authService.registerUser(registerRequest);
-        response.put("token", token);
-        response.put("username", registerRequest.getUsername());
-        return response;
+        return authService.registerUser(registerRequest);
     }
 
     @PostMapping("/login")
     public Object login(@RequestBody LoginRequest loginRequest) {
         Jsoup.clean(loginRequest.toString(), Safelist.basic());
-
-        Map<String, Object> response = new HashMap<>();
-        String token = authService.loginUser(loginRequest);
-        response.put("token", token);
-        response.put("username", loginRequest.getUsername());
-        return response;
+        return authService.loginUser(loginRequest);
     }
 
 }

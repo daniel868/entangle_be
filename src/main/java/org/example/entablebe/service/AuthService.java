@@ -1,9 +1,10 @@
 package org.example.entablebe.service;
 
+import org.example.entablebe.pojo.auth.AuthenticateResponse;
 import org.example.entablebe.pojo.auth.LoginRequest;
 import org.example.entablebe.pojo.auth.RegisterRequest;
 
 public interface AuthService {
-    String registerUser(RegisterRequest registerRequest);
-    String loginUser(LoginRequest loginRequest);
+    AuthenticateResponse registerUser(RegisterRequest registerRequest);
+    AuthenticateResponse loginUser(LoginRequest loginRequest);
 }

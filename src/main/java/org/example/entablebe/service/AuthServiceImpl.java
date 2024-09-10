@@ -3,9 +3,11 @@ package org.example.entablebe.service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.entablebe.entity.UserEntangle;
+import org.example.entablebe.pojo.auth.AuthenticateResponse;
 import org.example.entablebe.pojo.auth.LoginRequest;
 import org.example.entablebe.pojo.auth.RegisterRequest;
 import org.example.entablebe.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +19,9 @@ import java.util.HashMap;
 @Service
 public class AuthServiceImpl implements AuthService {
     private static final Logger logger = LogManager.getLogger(AuthServiceImpl.class);
+
+    @Value("${jwt.expiration.duration.minutes}")
+    private long tokenDurationInMinutes;
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -31,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String registerUser(RegisterRequest registerRequest) {
+    public AuthenticateResponse registerUser(RegisterRequest registerRequest) {
         logger.debug("registerUser - with email: {} and username: {}", registerRequest.getUsername(), registerRequest.getUsername());
         UserEntangle userEntangle = new UserEntangle();
         userEntangle.setUsername(registerRequest.getUsername());
@@ -40,19 +45,21 @@ public class AuthServiceImpl implements AuthService {
         userEntangle.setInfo(mapUserInfo(registerRequest));
 
         UserEntangle savedUser = userRepository.save(userEntangle);
+        String jwtToken = jwtService.generateToken(new HashMap<>(), savedUser);
 
-        return jwtService.generateToken(new HashMap<>(), savedUser);
+        return buildAuthenticateResponse(jwtToken, savedUser.getUsername());
     }
 
     @Override
-    public String loginUser(LoginRequest loginRequest) {
+    public AuthenticateResponse loginUser(LoginRequest loginRequest) {
         logger.debug("startLogin - with username: {}", loginRequest.getUsername());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
         );
         UserEntangle existingUser = userRepository.findByUsername(loginRequest.getUsername());
         if (existingUser != null) {
-            return jwtService.generateToken(new HashMap<>(), existingUser);
+            String jwtToken = jwtService.generateToken(new HashMap<>(), existingUser);
+            return buildAuthenticateResponse(jwtToken, existingUser.getUsername());
         }
         throw new UsernameNotFoundException("Username or password is incorrect");
     }
@@ -65,12 +72,20 @@ public class AuthServiceImpl implements AuthService {
                     .forEach(competence -> sb.append(competence).append(";"));
             sb.append("} ");
         }
-        if (!registerRequest.getQualification().isEmpty()){
+        if (!registerRequest.getQualification().isEmpty()) {
             sb.append("qualifications:{");
             registerRequest.getQualification()
                     .forEach(qualification -> sb.append(qualification).append(";"));
             sb.append("}");
         }
         return sb.isEmpty() ? null : sb.toString().trim();
+    }
+
+    private AuthenticateResponse buildAuthenticateResponse(String token, String username) {
+        return AuthenticateResponse.builder()
+                .token(token)
+                .username(username)
+                .expiresInSecond(tokenDurationInMinutes * 60)
+                .build();
     }
 }

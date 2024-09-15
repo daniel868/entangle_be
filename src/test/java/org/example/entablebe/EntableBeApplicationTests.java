@@ -23,26 +23,7 @@ class EntableBeApplicationTests {
 
     @Test
     void contextLoads() {
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-//        javaMailSender.setHost("smtp.gmail.com");
-//        javaMailSender.setPort(587);
-//
-//        javaMailSender.setUsername("sincalexndrudaniel@gmail.com");
-//        javaMailSender.setPassword("wmvp ikdq plwa acxf");
-//
-//        Properties props = javaMailSender.getJavaMailProperties();
-//        props.put("mail.smtp.auth", "true");
-//        props.put("mail.transport.protocol", "smtp");
-//        props.put("mail.smtp.starttls.enable", "true");
-//        props.put("mail.debug", true);
-//
-//        message.setFrom("sincalexndrudaniel@gmail.com");
-//        message.setTo("sincalexandrudaniel@gmail.com");
-//        message.setSubject("test email sending from springboot");
-//        message.setText("Hello from Springboot app");
-//
-//        javaMailSender.send(message);
+
     }
 
     @Test

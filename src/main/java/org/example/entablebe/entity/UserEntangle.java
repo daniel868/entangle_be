@@ -25,6 +25,12 @@ public class UserEntangle implements UserDetails {
 
     private String info;
 
+    @Column(name = "validation_email_token")
+    private String validationEmailToken;
+
+    @Column(name = "account_activate")
+    private boolean accountActivate;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();

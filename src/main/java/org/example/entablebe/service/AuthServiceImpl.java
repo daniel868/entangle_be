@@ -7,12 +7,14 @@ import org.example.entablebe.pojo.auth.AuthenticateResponse;
 import org.example.entablebe.pojo.auth.LoginRequest;
 import org.example.entablebe.pojo.auth.RegisterRequest;
 import org.example.entablebe.repository.UserRepository;
+import org.example.entablebe.utils.AppUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 
@@ -23,19 +25,25 @@ public class AuthServiceImpl implements AuthService {
     @Value("${jwt.expiration.duration.minutes}")
     private long tokenDurationInMinutes;
 
+    @Value("${cypher.encryption.key}")
+    private String cypherEncryptionKey;
+
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
 
-    public AuthServiceImpl(JwtService jwtService, UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    public AuthServiceImpl(JwtService jwtService, UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, EmailService emailService) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.emailService = emailService;
     }
 
     @Override
+    @Transactional
     public AuthenticateResponse registerUser(RegisterRequest registerRequest) {
         logger.debug("registerUser - with email: {} and username: {}", registerRequest.getUsername(), registerRequest.getUsername());
         UserEntangle userEntangle = new UserEntangle();
@@ -44,10 +52,20 @@ public class AuthServiceImpl implements AuthService {
         userEntangle.setEmail(registerRequest.getEmail());
         userEntangle.setInfo(mapUserInfo(registerRequest));
 
+        try {
+            String emailToken = generateEmailToken(registerRequest.getUsername());
+            userEntangle.setAccountActivate(false);
+            userEntangle.setValidationEmailToken(emailToken);
+            emailService.sendLinkActivation(registerRequest.getEmail(), emailToken);
+        } catch (Exception e) {
+            logger.error("Error generation email validation token for {}", userEntangle.getUsername());
+            throw new RuntimeException("Error generation email validation token for " + userEntangle.getUsername(), e);
+        }
+
         UserEntangle savedUser = userRepository.save(userEntangle);
         String jwtToken = jwtService.generateToken(new HashMap<>(), savedUser);
 
-        return buildAuthenticateResponse(jwtToken, savedUser.getUsername());
+        return buildAuthenticateResponse(jwtToken, savedUser, false);
     }
 
     @Override
@@ -59,9 +77,38 @@ public class AuthServiceImpl implements AuthService {
         UserEntangle existingUser = userRepository.findByUsername(loginRequest.getUsername());
         if (existingUser != null) {
             String jwtToken = jwtService.generateToken(new HashMap<>(), existingUser);
-            return buildAuthenticateResponse(jwtToken, existingUser.getUsername());
+            return buildAuthenticateResponse(jwtToken, existingUser, existingUser.isAccountActivate());
         }
         throw new UsernameNotFoundException("Username or password is incorrect");
+    }
+
+    @Override
+    @Transactional
+    public AuthenticateResponse activateUserAccount(String emailToken) {
+        logger.debug("activateUser - with token: {}", emailToken);
+        if (emailToken == null || emailToken.isEmpty()) {
+            return null;
+        }
+        try {
+            String decryptedPayload = AppUtils.decrypt(emailToken, cypherEncryptionKey);
+            String username = extractUsername(decryptedPayload);
+            logger.debug("activateUser - with username: {}", username);
+
+            UserEntangle userByUsername = userRepository.findByUsername(username);
+            if (userByUsername == null || !userByUsername.getValidationEmailToken().equals(emailToken)) {
+                throw new UsernameNotFoundException("Username " + username + " not found");
+            }
+
+            userByUsername.setAccountActivate(true);
+            userRepository.save(userByUsername);
+            String jwtToken = jwtService.generateToken(new HashMap<>(), userByUsername);
+
+            return buildAuthenticateResponse(jwtToken, userByUsername, true);
+
+        } catch (Exception e) {
+            logger.error("Error activating account for token: {}", emailToken, e);
+            throw new RuntimeException("Error activating account for token:" + emailToken, e);
+        }
     }
 
     private String mapUserInfo(RegisterRequest registerRequest) {
@@ -81,11 +128,23 @@ public class AuthServiceImpl implements AuthService {
         return sb.isEmpty() ? null : sb.toString().trim();
     }
 
-    private AuthenticateResponse buildAuthenticateResponse(String token, String username) {
+    private AuthenticateResponse buildAuthenticateResponse(String token, UserEntangle userEntangle , boolean activateAccount) {
         return AuthenticateResponse.builder()
                 .token(token)
-                .username(username)
+                .username(userEntangle.getUsername())
+                .userEmail(userEntangle.getEmail())
+                .accountActivate(activateAccount)
                 .expiresInSecond(tokenDurationInMinutes * 60)
                 .build();
+    }
+
+    private String generateEmailToken(String username) throws Exception {
+        String tokenPayload = "{username:" + username + "}";
+        return AppUtils.encrypt(tokenPayload, cypherEncryptionKey);
+    }
+
+    private String extractUsername(String decryptedPayload) {
+        return decryptedPayload.replace("{username:", "")
+                .replace("}", "");
     }
 }

@@ -6,5 +6,8 @@ import org.example.entablebe.pojo.auth.RegisterRequest;
 
 public interface AuthService {
     AuthenticateResponse registerUser(RegisterRequest registerRequest);
+
     AuthenticateResponse loginUser(LoginRequest loginRequest);
+
+    AuthenticateResponse activateUserAccount(String emailToken);
 }

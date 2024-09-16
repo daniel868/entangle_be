@@ -1,5 +1,7 @@
 package org.example.entablebe.service;
 
+import org.example.entablebe.pojo.userInfo.UserInfoResponse;
+
 public interface UserInfoService {
-    UserInfoService buildUserInfoResponse(Long userId);
+    UserInfoResponse buildUserInfoResponse(Long userId);
 }

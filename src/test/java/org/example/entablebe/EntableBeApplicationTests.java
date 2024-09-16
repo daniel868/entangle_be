@@ -28,7 +28,7 @@ class EntableBeApplicationTests {
 
     @Test
     public void testTokenEncryption() throws Exception {
-        byte[] keyBytes = Arrays.copyOf("L2r01kJ/q5foSD1EbjvTi+vP3570cBp9HPc45LNbvHu2skgHzZ8fcqriJLgZH22D".getBytes(StandardCharsets.UTF_8), 32);
+        byte[] keyBytes = Arrays.copyOf("12345".getBytes(StandardCharsets.UTF_8), 32);
         String message = "user=test_user";
         SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
         byte[] iv = new byte[16];
@@ -62,16 +62,7 @@ class EntableBeApplicationTests {
         String userInfo = "competences:{mock condition test mock condition test mock condition test ;mock condition test  mock condition test  mock condition test ;} " +
                 "qualifications:{D1 Physical;D4 Emotional;D6 Environmental;}";
 
-        String[] split = userInfo.split("qualifications:");
-
-        if (split.length > 1) {
-            String extractedQualification = split[1];
-            extractedQualification = extractedQualification.replace("{", "")
-                    .replace("}", "");
-
-            Arrays.stream(extractedQualification.split(";"))
-                    .map(String::trim)
-                    .forEach(System.out::println);
+        String[] split = userInfo.split("(?<=[}])\\s+");
+        System.out.println(split);
         }
-    }
 }

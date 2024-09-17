@@ -7,6 +7,16 @@ spring:
   jpa:
     show-sql: true
     generate-ddl: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
 server:
   port: 8082
 
@@ -23,3 +33,9 @@ logging:
       example:
         entablebe*: debug
 
+cypher:
+  encryption:
+    key: L2r01kJ/q5foSD1EbjvTi+vP3570cBp9HPc45LNbvHu2skgHzZ8fcqriJLgZH22D
+
+base:
+  path: ${BASE_PATH}

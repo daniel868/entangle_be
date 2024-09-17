@@ -11,9 +11,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Properties;
+import java.util.*;
 
 @SpringBootTest
 class EntableBeApplicationTests {
@@ -62,7 +60,21 @@ class EntableBeApplicationTests {
         String userInfo = "competences:{mock condition test mock condition test mock condition test ;mock condition test  mock condition test  mock condition test ;} " +
                 "qualifications:{D1 Physical;D4 Emotional;D6 Environmental;}";
 
-        String[] split = userInfo.split("(?<=[}])\\s+");
-        System.out.println(split);
+        String[] parts = userInfo.split("(?<=[}])\\s+");
+        Map<String, List<String>> result = new HashMap<>();
+        for (String part : parts) {
+            String[] keyValue = part.split(":", 2);
+            if (keyValue.length == 2) {
+                String key = keyValue[0];
+                String value = keyValue[1];
+                value = value.replace("{","").replace("}", "");
+
+                List<String> list = Arrays.stream(value.split(";"))
+                        .map(String::trim)
+                        .toList();
+                result.put(key,list);
+            }
         }
+        System.out.println();
+    }
 }

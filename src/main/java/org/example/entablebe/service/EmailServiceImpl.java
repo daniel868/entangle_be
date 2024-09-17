@@ -2,6 +2,7 @@ package org.example.entablebe.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,12 @@ import java.util.concurrent.ExecutorService;
 @Service
 public class EmailServiceImpl implements EmailService {
     private final static Logger logger = LogManager.getLogger(EmailServiceImpl.class);
+
+    @Value("${spring.mail.username}")
+    private String smtpUsername;
+
+    @Value("${base.path}")
+    private String basePath;
 
     private final JavaMailSender mailSender;
     private final ExecutorService executorService;
@@ -23,8 +30,8 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendLinkActivation(String toEmail, String payload) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("sincalexndrudaniel@gmail.com");
-        message.setTo("sincalexandrudaniel@gmail.com");
+        message.setFrom(smtpUsername);
+        message.setTo(toEmail);
         message.setSubject("Email activation test from Springboot");
 
         StringBuilder emailTemplate = new StringBuilder();
@@ -43,6 +50,6 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private String buildActivationUrl(String payload) {
-        return "http://localhost:4200/email-validation?emailToken=" + payload;
+        return basePath + "email-validation?emailToken=" + payload;
     }
 }

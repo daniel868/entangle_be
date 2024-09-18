@@ -1,5 +1,6 @@
 package org.example.entablebe.controller;
 
+import org.example.entablebe.pojo.auth.ActivateEmailResponse;
 import org.example.entablebe.pojo.auth.LoginRequest;
 import org.example.entablebe.pojo.auth.RegisterRequest;
 import org.example.entablebe.service.AuthService;
@@ -30,9 +31,9 @@ public class AuthController {
     }
 
     @PostMapping("/activate")
-    public Object activateAccount(@RequestParam String token){
-        Jsoup.clean(token, Safelist.basic());
-        return authService.activateUserAccount(token);
+    public Object activateAccount(@RequestBody ActivateEmailResponse response) {
+        Jsoup.clean(response.toString(), Safelist.basic());
+        return authService.activateUserAccount(response.getEmailToken());
     }
 
 }

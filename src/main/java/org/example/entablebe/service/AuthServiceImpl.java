@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 
 @Service
@@ -95,8 +97,12 @@ public class AuthServiceImpl implements AuthService {
             logger.debug("activateUser - with username: {}", username);
 
             UserEntangle userByUsername = userRepository.findByUsername(username);
-            if (userByUsername == null || !userByUsername.getValidationEmailToken().equals(emailToken)) {
+            if (userByUsername == null) {
                 throw new UsernameNotFoundException("Username " + username + " not found");
+            }
+            String decodedToken = URLDecoder.decode(userByUsername.getValidationEmailToken(), "UTF-8");
+            if (!decodedToken.equals(emailToken)) {
+                throw new RuntimeException("Invalid Email token for user:" + username);
             }
 
             userByUsername.setAccountActivate(true);
@@ -128,7 +134,7 @@ public class AuthServiceImpl implements AuthService {
         return sb.isEmpty() ? null : sb.toString().trim();
     }
 
-    private AuthenticateResponse buildAuthenticateResponse(String token, UserEntangle userEntangle , boolean activateAccount) {
+    private AuthenticateResponse buildAuthenticateResponse(String token, UserEntangle userEntangle, boolean activateAccount) {
         return AuthenticateResponse.builder()
                 .token(token)
                 .username(userEntangle.getUsername())
@@ -140,7 +146,9 @@ public class AuthServiceImpl implements AuthService {
 
     private String generateEmailToken(String username) throws Exception {
         String tokenPayload = "{username:" + username + "}";
-        return AppUtils.encrypt(tokenPayload, cypherEncryptionKey);
+        String encryptedToken = AppUtils.encrypt(tokenPayload, cypherEncryptionKey);
+
+        return URLEncoder.encode(encryptedToken, "UTF-8");
     }
 
     private String extractUsername(String decryptedPayload) {

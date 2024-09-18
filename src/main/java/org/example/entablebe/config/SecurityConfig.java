@@ -1,5 +1,6 @@
 package org.example.entablebe.config;
 
+import org.example.entablebe.filters.AngularUrlFilter;
 import org.example.entablebe.filters.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +40,7 @@ public class SecurityConfig {
                     httpSecurityCorsConfigurer.configurationSource(source);
                 })
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/assets/**", "/*.png", "/*.jpg", "/*.ico", "/*.js", "/*.css", "/", "/main", "/*.html").permitAll(); //static resources
+                    auth.requestMatchers("/assets/**", "/*.png", "/*.jpg", "/*.ico", "/*.js", "/*.css", "/", "/main", "/email-validation", "/*.html").permitAll(); //static resources
                     auth.requestMatchers("/auth/**").permitAll(); //auth APIS
                     auth.anyRequest().authenticated();
                 })

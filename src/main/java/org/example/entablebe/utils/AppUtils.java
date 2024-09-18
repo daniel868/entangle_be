@@ -14,8 +14,8 @@ public class AppUtils {
     public static final List<String> angularUrls = asList(
             "/main",
             "/add",
-            "/auth",
-            "/email-validation"
+            "/auth"
+//            "/email-validation"
     );
 
     public static boolean isAngularUrl(final String url) {

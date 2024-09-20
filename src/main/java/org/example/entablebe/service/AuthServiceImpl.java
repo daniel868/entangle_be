@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -114,6 +115,24 @@ public class AuthServiceImpl implements AuthService {
         } catch (Exception e) {
             logger.error("Error activating account for token: {}", emailToken, e);
             throw new RuntimeException("Error activating account for token:" + emailToken, e);
+        }
+    }
+
+    @Override
+    public boolean sendResetAccountPassword(String emailAddress) {
+        try {
+            List<UserEntangle> userByEmail = userRepository.findUserByEmail(emailAddress);
+            if (userByEmail.isEmpty()) {
+                return false;
+            }
+            //extract first match
+            UserEntangle userEntangle = userByEmail.get(0);
+            String resetPasswordToken = generateEmailToken(userEntangle.getUsername());
+            emailService.sendResetPasswordLink(emailAddress, resetPasswordToken);
+            return true;
+        } catch (Exception e) {
+            logger.error("Exception occurred when sending reset link for email: {}", emailAddress, e);
+            return false;
         }
     }
 

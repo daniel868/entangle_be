@@ -10,4 +10,6 @@ public interface AuthService {
     AuthenticateResponse loginUser(LoginRequest loginRequest);
 
     AuthenticateResponse activateUserAccount(String emailToken);
+
+    boolean sendResetAccountPassword(String emailToken);
 }

@@ -42,14 +42,40 @@ public class EmailServiceImpl implements EmailService {
         message.setText(emailTemplate.toString());
 
         executorService.submit(() -> {
-            logger.info("Sending activation email for email: {}",toEmail);
+            logger.info("Sending activation email for email: {}", toEmail);
             mailSender.send(message);
             logger.info("Finish sending email for email: {}", toEmail);
         });
 
     }
 
+    @Override
+    public void sendResetPasswordLink(String toEmail, String payload) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(smtpUsername);
+        message.setTo(toEmail);
+
+        message.setSubject("Password reset link test from Springboot");
+
+        StringBuilder emailTemplate = new StringBuilder();
+        emailTemplate.append("Hello\n");
+        emailTemplate.append("This is your reset link for your account: \n");
+        emailTemplate.append("Url: ").append(buildResetActionUrl(payload)).append("\n");
+        emailTemplate.append("Goodbye\n");
+        message.setText(emailTemplate.toString());
+
+        executorService.submit(() -> {
+            logger.info("Sending reset link for email: {}", toEmail);
+            mailSender.send(message);
+            logger.info("Finish sending reset link for email: {}", toEmail);
+        });
+    }
+
     private String buildActivationUrl(String payload) {
         return basePath + "email-validation?emailToken=" + payload;
+    }
+
+    private String buildResetActionUrl(String payload) {
+        return basePath + "reset-password-step1?emailToken=" + payload;
     }
 }

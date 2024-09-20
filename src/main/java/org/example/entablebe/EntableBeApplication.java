@@ -38,7 +38,7 @@ public class EntableBeApplication {
                 UserEntangle userEntangle = new UserEntangle();
                 userEntangle.setUsername("test");
                 userEntangle.setPassword(passwordEncoder.encode("test"));
-                userEntangle.setEmail("test@gmail.com");
+                userEntangle.setEmail("sincalexandrudaniel@gmail.com");
                 userEntangle.setAccountActivate(true);
                 userEntangle.setInfo("competences:{mock condition test mock condition test mock condition test ;mock condition test  mock condition test  mock condition test ;} " +
                         "qualifications:{D1 Physical;D4 Emotional;D6 Environmental;}");

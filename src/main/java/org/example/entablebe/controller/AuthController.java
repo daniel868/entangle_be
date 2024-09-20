@@ -8,6 +8,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -36,4 +39,12 @@ public class AuthController {
         return authService.activateUserAccount(response.getEmailToken());
     }
 
+    @PostMapping("/sendResetPasswordLink")
+    public Object resetAccountPasswordStep1(@RequestParam String emailAddress) {
+        Jsoup.clean(emailAddress, Safelist.basic());
+        boolean emailSent = authService.sendResetAccountPassword(emailAddress);
+        Map<String, Object> response = new HashMap<>();
+        response.put("emailSend", emailSent);
+        return response;
+    }
 }

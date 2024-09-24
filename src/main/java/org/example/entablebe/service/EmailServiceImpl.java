@@ -76,6 +76,6 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private String buildResetActionUrl(String payload) {
-        return basePath + "reset-password-step1?emailToken=" + payload;
+        return basePath + "reset-password-step2?emailToken=" + payload;
     }
 }

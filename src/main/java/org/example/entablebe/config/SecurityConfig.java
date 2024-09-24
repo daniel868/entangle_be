@@ -40,7 +40,9 @@ public class SecurityConfig {
                     httpSecurityCorsConfigurer.configurationSource(source);
                 })
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/assets/**", "/*.png", "/*.jpg", "/*.ico", "/*.js", "/*.css", "/", "/main", "/email-validation", "/*.html").permitAll(); //static resources
+                    auth.requestMatchers("/assets/**", "/*.png", "/*.jpg", "/*.ico", "/*.js", "/*.css", "/", "/main",
+                            "/email-validation","/reset-password-step1","/reset-password-step2",
+                            "/*.html").permitAll(); //static resources
                     auth.requestMatchers("/auth/**").permitAll(); //auth APIS
                     auth.anyRequest().authenticated();
                 })

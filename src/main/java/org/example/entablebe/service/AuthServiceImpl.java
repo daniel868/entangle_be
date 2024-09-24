@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.entablebe.entity.UserEntangle;
 import org.example.entablebe.pojo.auth.AuthenticateResponse;
+import org.example.entablebe.pojo.auth.ResetPasswordRequest;
 import org.example.entablebe.pojo.auth.LoginRequest;
 import org.example.entablebe.pojo.auth.RegisterRequest;
 import org.example.entablebe.repository.UserRepository;
@@ -134,6 +135,33 @@ public class AuthServiceImpl implements AuthService {
             logger.error("Exception occurred when sending reset link for email: {}", emailAddress, e);
             return false;
         }
+    }
+
+    @Override
+    @Transactional
+    public boolean resetAccountPassword(ResetPasswordRequest request) {
+        try {
+            if (request.getNewPassword().isEmpty() || request.getEmailToken().isEmpty()){
+                return false;
+            }
+
+            String decryptedPayload = AppUtils.decrypt(request.getEmailToken(), cypherEncryptionKey);
+            String username = extractUsername(decryptedPayload);
+
+            logger.debug("resetAccountPassword - with username: {}", username);
+
+            UserEntangle user = userRepository.findByUsername(username);
+            if (user == null) {
+                throw new UsernameNotFoundException("Username " + username + " not found");
+            }
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+
+            return true;
+        } catch (Exception e) {
+            logger.error("Exception occurred when resetting password ", e);
+        }
+        return false;
     }
 
     private String mapUserInfo(RegisterRequest registerRequest) {

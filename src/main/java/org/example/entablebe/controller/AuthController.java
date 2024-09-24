@@ -3,6 +3,7 @@ package org.example.entablebe.controller;
 import org.example.entablebe.pojo.auth.ActivateEmailResponse;
 import org.example.entablebe.pojo.auth.LoginRequest;
 import org.example.entablebe.pojo.auth.RegisterRequest;
+import org.example.entablebe.pojo.auth.ResetPasswordRequest;
 import org.example.entablebe.service.AuthService;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
@@ -45,6 +46,15 @@ public class AuthController {
         boolean emailSent = authService.sendResetAccountPassword(emailAddress);
         Map<String, Object> response = new HashMap<>();
         response.put("emailSend", emailSent);
+        return response;
+    }
+
+    @PostMapping("/resetAccountPassword")
+    public Object resectAccountPassword(@RequestBody ResetPasswordRequest request) {
+        Jsoup.clean(request.toString(), Safelist.basic());
+        boolean passwordChanged = authService.resetAccountPassword(request);
+        Map<String, Object> response = new HashMap<>();
+        response.put("passwordChanged", passwordChanged);
         return response;
     }
 }

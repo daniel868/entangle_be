@@ -61,8 +61,7 @@ public class UserInfoController {
                     AppConstants.USER_NOT_FOUND,
                     HttpStatus.NOT_FOUND.value()
             );
-        } catch (
-                PasswordDoesNotMatchException e) {
+        } catch (PasswordDoesNotMatchException e) {
             logger.error("Password does not match for userId: {}", authUser.getId());
             return new GenericErrorResponse(
                     AppConstants.INVALID_PASSWORD,

@@ -10,6 +10,8 @@ import java.util.List;
 @Setter
 @Builder
 public class UserInfoResponse {
+    private String username;
+    private String email;
     private List<String> qualification;
     private List<String> competences;
 }

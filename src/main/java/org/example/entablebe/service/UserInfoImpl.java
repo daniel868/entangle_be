@@ -36,11 +36,13 @@ public class UserInfoImpl implements UserInfoService {
     public UserInfoResponse buildUserInfoResponse(Long userId) {
         Optional<UserEntangle> userById = userRepository.findById(userId);
         if (userById.isPresent()) {
-            String userInfo = userById.get().getInfo();
-            Map<String, List<String>> characteristics = extractCharacteristics(userInfo, userId);
+            UserEntangle userEntangle = userById.get();
+            Map<String, List<String>> characteristics = extractCharacteristics(userEntangle.getInfo(), userId);
             return UserInfoResponse.builder()
                     .competences(characteristics.get("competences"))
                     .qualification(characteristics.get("qualifications"))
+                    .email(userEntangle.getEmail())
+                    .username(userEntangle.getUsername())
                     .build();
         }
         return null;
@@ -48,122 +50,54 @@ public class UserInfoImpl implements UserInfoService {
 
     @Override
     @Transactional
-    public Object changePassword(Long userId,
-                                 ChangePasswordRequest changePasswordRequest) {
+    public Map<String, Object> changePassword(Long userId,
+                                              ChangePasswordRequest changePasswordRequest) {
 
-        if (changePasswordRequest.getNewPassword().isEmpty() || changePasswordRequest.getCurrentPassword().isEmpty()) {
-            return new GenericErrorResponse(
-                    AppConstants.INVALID_REQUEST,
-                    HttpStatus.BAD_REQUEST.value()
-            );
+        UserEntangle userEntangle = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+
+        boolean matches = passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), userEntangle.getPassword());
+        if (!matches) {
+            throw new PasswordDoesNotMatchException("Password does not match");
         }
+        userEntangle.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepository.save(userEntangle);
+        logger.debug("Successfully changed password for userId: {}", userId);
 
-        try {
-            UserEntangle userEntangle = userRepository.findById(userId)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
 
-            boolean matches = passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), userEntangle.getPassword());
-            if (!matches) {
-                throw new PasswordDoesNotMatchException("Password does not match");
-            }
-            userEntangle.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
-            userRepository.save(userEntangle);
-            logger.debug("Successfully changed password for userId: {}", userId);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-
-            return new GenericSuccessResponse<>(response);
-        } catch (UsernameNotFoundException e) {
-            logger.error("User not found with id: {}", userId);
-            return new GenericErrorResponse(
-                    AppConstants.USER_NOT_FOUND,
-                    HttpStatus.NOT_FOUND.value()
-            );
-        } catch (PasswordDoesNotMatchException e) {
-            logger.error("Password does not match for userId: {}", userId);
-            return new GenericErrorResponse(
-                    AppConstants.INVALID_PASSWORD,
-                    HttpStatus.BAD_REQUEST.value()
-            );
-        } catch (Exception e) {
-            logger.error("Could not change password", e);
-            return new GenericErrorResponse(
-                    AppConstants.INTERNAL_SERVER_ERROR,
-                    HttpStatus.INTERNAL_SERVER_ERROR.value()
-            );
-        }
+        return response;
     }
 
     @Override
     @Transactional
-    public Object changeUsername(Long userId, String newUsername) {
-        if (newUsername == null || newUsername.length() < 4) {
-            return new GenericErrorResponse(
-                    AppConstants.INVALID_REQUEST,
-                    HttpStatus.BAD_REQUEST.value()
-            );
-        }
-
+    public Map<String, Object> changeUsername(Long userId, String newUsername) {
         Map<String, Object> response = new HashMap<>();
-        try {
-            UserEntangle userEntangle = userRepository.findById(userId)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
-            userEntangle.setUsername(newUsername);
-            userRepository.save(userEntangle);
-            logger.debug("Username changed for userId: {}", userId);
 
-            response.put("success", true);
-            return new GenericSuccessResponse<>(response);
-        } catch (UsernameNotFoundException e) {
-            logger.error("User not found with id: {}", userId);
-            return new GenericErrorResponse(
-                    AppConstants.USER_NOT_FOUND,
-                    HttpStatus.NOT_FOUND.value()
-            );
-        } catch (Exception e) {
-            logger.error("Could not change username for userId: {}", userId, e);
-            return new GenericErrorResponse(
-                    AppConstants.INTERNAL_SERVER_ERROR,
-                    HttpStatus.INTERNAL_SERVER_ERROR.value()
-            );
-        }
+        UserEntangle userEntangle = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+        userEntangle.setUsername(newUsername);
+        userRepository.save(userEntangle);
+        logger.debug("Username changed for userId: {}", userId);
+
+        response.put("success", true);
+        return response;
     }
 
     @Override
-    public Object changeEmail(Long userId, String newEmail) {
-        Pattern emailPattern = Pattern.compile(AppConstants.EMAIL_REGEX);
-
-        if (newEmail == null || !emailPattern.matcher(newEmail).matches()) {
-            return new GenericErrorResponse(
-                    AppConstants.INVALID_REQUEST,
-                    HttpStatus.BAD_REQUEST.value()
-            );
-        }
+    public Map<String, Object> changeEmail(Long userId, String newEmail) {
         Map<String, Object> response = new HashMap<>();
-        try {
-            UserEntangle userEntangle = userRepository.findById(userId)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
 
-            userEntangle.setEmail(newEmail);
-            userRepository.save(userEntangle);
-            logger.debug("Email changed for userId: {}", userId);
-            response.put("success", true);
+        UserEntangle userEntangle = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
 
-            return new GenericSuccessResponse<>(response);
-        } catch (UsernameNotFoundException e) {
-            logger.error("User not found with id: {}", userId);
-            return new GenericErrorResponse(
-                    AppConstants.USER_NOT_FOUND,
-                    HttpStatus.NOT_FOUND.value()
-            );
-        } catch (Exception e) {
-            logger.error("Could not change email for userId: {}", userId, e);
-            return new GenericErrorResponse(
-                    AppConstants.INTERNAL_SERVER_ERROR,
-                    HttpStatus.INTERNAL_SERVER_ERROR.value()
-            );
-        }
+        userEntangle.setEmail(newEmail);
+        userRepository.save(userEntangle);
+        logger.debug("Email changed for userId: {}", userId);
+        response.put("success", true);
+
+        return response;
     }
 
     private Map<String, List<String>> extractCharacteristics(String info, Long userId) {

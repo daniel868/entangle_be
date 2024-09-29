@@ -27,6 +27,8 @@ spring:
     job:
       enabled: false
     size: 100
+    jdbc:
+      initialize-schema: always
 server:
   port: 8082
 

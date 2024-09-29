@@ -1,6 +1,5 @@
 package org.example.entablebe.config;
 
-import org.example.entablebe.filters.AngularUrlFilter;
 import org.example.entablebe.filters.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,9 +40,10 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/assets/**", "/*.png", "/*.jpg", "/*.ico", "/*.js", "/*.css", "/", "/main",
-                            "/email-validation","/reset-password-step1","/reset-password-step2",
+                            "/email-validation", "/reset-password-step1", "/reset-password-step2",
                             "/*.html").permitAll(); //static resources
                     auth.requestMatchers("/auth/**").permitAll(); //auth APIS
+                    auth.requestMatchers("/h2-console/**").permitAll();//testing console H2
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

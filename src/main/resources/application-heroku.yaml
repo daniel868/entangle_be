@@ -19,6 +19,10 @@ spring:
   datasource:
     url: ${DATABASE_URL}
     driver-class-name: org.postgresql.Driver
+  batch:
+    job:
+      enabled: false
+    size: 100
 server:
   port: 8082
 
@@ -34,6 +38,7 @@ logging:
     org:
       example:
         entablebe*: debug
+      springframework.transaction.interceptor*: TRACE
 
 cypher:
   encryption:

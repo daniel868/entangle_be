@@ -4,19 +4,29 @@ spring:
   h2:
     console:
       enabled: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
   jpa:
     show-sql: true
     generate-ddl: true
+    database-platform: org.hibernate.dialect.H2Dialect
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${SMTP_USERNAME}
-    password: ${SMTP_PASSWORD}
+    username: 1321
+    password: 1233
     properties:
       mail:
         smtp:
           auth: true
           starttls.enable: true
+  batch:
+    job:
+      enabled: false
+    size: 100
 server:
   port: 8082
 
@@ -32,10 +42,10 @@ logging:
     org:
       example:
         entablebe*: debug
-
+      springframework.transaction.interceptor*: TRACE
 cypher:
   encryption:
     key: L2r01kJ/q5foSD1EbjvTi+vP3570cBp9HPc45LNbvHu2skgHzZ8fcqriJLgZH22D
 
 base:
-  path: ${BASE_PATH}
+  path: 1231

@@ -12,7 +12,7 @@ public class BatchReaderConfig {
     @Bean
     public FlatFileItemReader<String> diseaseLineReader() {
         FlatFileItemReader<String> flatFileItemReader = new FlatFileItemReader<>();
-        flatFileItemReader.setResource(new FileSystemResource("src/main/resources/import/diseases.csv"));
+        flatFileItemReader.setResource(new FileSystemResource("src/main/resources/import/diseases_mock.csv"));
         flatFileItemReader.setName("diseaseLineReader");
         flatFileItemReader.setLineMapper(diseaseLineMapper());
         return flatFileItemReader;

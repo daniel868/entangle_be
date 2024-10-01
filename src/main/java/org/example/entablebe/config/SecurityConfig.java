@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
@@ -38,13 +39,16 @@ public class SecurityConfig {
                     source.registerCorsConfiguration("/**", configuration);
                     httpSecurityCorsConfigurer.configurationSource(source);
                 })
+                .headers(httpHeaders -> {
+                    httpHeaders.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
+                })
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/assets/**", "/*.png", "/*.jpg", "/*.ico", "/*.js", "/*.css", "/", "/main",
                             "/email-validation", "/reset-password-step1", "/reset-password-step2",
                             "/*.html").permitAll(); //static resources
                     auth.requestMatchers("/auth/**").permitAll(); //auth APIS
-                    auth.requestMatchers("/h2-console/**").permitAll();//testing console H2
-                    auth.anyRequest().authenticated();
+                    auth.requestMatchers("/console/**").permitAll();//testing console H2
+                    auth.anyRequest().permitAll();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .userDetailsService(userDetailsService)

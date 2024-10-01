@@ -7,12 +7,20 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Table(name = "ent_user")
 @Getter
 @Setter
 @Entity
+@NamedQueries(value = {
+        @NamedQuery(
+                name = "UserEntangle.fetchUserWithCompetences",
+                query = "select us from UserEntangle us left join fetch us.competences where us.id =: userId"
+        )
+})
 public class UserEntangle implements UserDetails {
     @Id
     @SequenceGenerator(name = "ent_user_sequence", initialValue = 1, allocationSize = 1)
@@ -31,6 +39,23 @@ public class UserEntangle implements UserDetails {
     @Column(name = "account_activate")
     private boolean accountActivate;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "user_id")
+    private Set<Competence> competences;
+
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "user_id")
+    private Set<Treatment> treatments;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
@@ -44,5 +69,20 @@ public class UserEntangle implements UserDetails {
     @Override
     public String getUsername() {
         return username;
+    }
+
+
+    public void addCompetence(Competence competence) {
+        if (competences == null) {
+            competences = new HashSet<>();
+        }
+        competences.add(competence);
+    }
+
+    public void addTreatment(Treatment treatment) {
+        if (treatments == null) {
+            treatments = new HashSet<>();
+        }
+        treatments.add(treatment);
     }
 }

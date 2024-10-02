@@ -18,10 +18,4 @@ public class Competence {
     @Column(name = "type")
     private CompetenceType type;
 
-    @Column(name = "name")
-    private String name;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private UserEntangle userEntangle;
 }

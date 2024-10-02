@@ -61,46 +61,43 @@ public class EntableBeApplication {
                     userEntangle.setAccountActivate(true);
                     userEntangle.setInfo("competences:{mock condition test mock condition test mock condition test ;mock condition test  mock condition test  mock condition test ;}");
 
-                    Competence competenceD1 = new Competence();
-                    competenceD1.setType(CompetenceType.QUALIFICATION);
-                    competenceD1.setName("D1");
+                    TypedQuery<Competence> query = transactionalEntityManager.createQuery("select c from Competence c where c.id in (1,2)", Competence.class);
+                    List<Competence> userCompetence = query.getResultList();
 
-
-                    Competence competenceD2 = new Competence();
-                    competenceD2.setType(CompetenceType.QUALIFICATION);
-                    competenceD2.setName("D2");
-
-                    userEntangle.addCompetence(competenceD1);
-                    userEntangle.addCompetence(competenceD2);
+                    userCompetence.forEach(userEntangle::addCompetence);
 
                     transactionalEntityManager.persist(userEntangle);
 
 
                     UserEntangle result = userRepository.fetchUserWithCompetences(1L);
                     insertMockData(transactionalEntityManager, userEntangle);
-
                     platformTransactionManager.commit(transaction);
                     transactionalEntityManager.close();
                 } catch (Exception e) {
-
+                    if (!transaction.isCompleted()) {
+                        platformTransactionManager.rollback(transaction);
+                    }
                     logger.error(e);
                 }
             }
 
             EntityManager entityManager = entityManagerFactory.createEntityManager();
             TypedQuery<Disease> namedQuery = entityManager.createNamedQuery("Disease.fetchAllDiseaseForUser", Disease.class);
-            namedQuery.setParameter("userId", 1L);
+            namedQuery.setParameter("userTreatmentTypes", List.of("D1", "D2"));
             List<Disease> response = namedQuery.getResultList();
             logger.debug("Response size: {}", response.size());
         };
     }
 
-    private void insertMockData(EntityManager entityManager, UserEntangle userEntangle) {
+    private void insertMockData(EntityManager entityManager,
+                                UserEntangle userEntangle) {
         Treatment treatment1 = new Treatment();
         treatment1.setDescription("treatment1_1");
+        treatment1.setTreatmentType("D1");
 
         Treatment treatment2 = new Treatment();
         treatment2.setDescription("treatment1_2");
+        treatment2.setTreatmentType("D2");
 
         userEntangle.addTreatment(treatment1);
         userEntangle.addTreatment(treatment2);
@@ -112,9 +109,6 @@ public class EntableBeApplication {
 
         Disease disease2 = new Disease();
         disease2.setName("disease2");
-
-        userEntangle.getCompetences().forEach(treatment1::addCompetences);
-        userEntangle.getCompetences().forEach(treatment2::addCompetences);
 
         entityManager.persist(disease1);
         entityManager.persist(disease2);

@@ -39,12 +39,15 @@ public class UserEntangle implements UserDetails {
     @Column(name = "account_activate")
     private boolean accountActivate;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = {
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE,
             CascadeType.REFRESH
     })
-    @JoinColumn(name = "user_id")
+    @JoinTable(name = "ent_user_competence",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "competence_id")}
+    )
     private Set<Competence> competences;
 
 

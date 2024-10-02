@@ -22,26 +22,7 @@ public class Treatment {
     @Column(name = "description")
     private String description;
 
-
-    @ManyToMany(
-            fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.MERGE,
-                    CascadeType.PERSIST,
-                    CascadeType.DETACH
-            })
-    @JoinTable(
-            name = "ent_treatment_competence",
-            joinColumns = {@JoinColumn(name = "competence_id")},
-            inverseJoinColumns = {@JoinColumn(name = "treatment_id")}
-    )
-    private Set<Competence> competences;
-
-    public void addCompetences(Competence competence) {
-        if (competences == null) {
-            competences = new HashSet<>();
-        }
-        competences.add(competence);
-    }
+    @Column(name = "treatment_type")
+    private String treatmentType;
 
 }

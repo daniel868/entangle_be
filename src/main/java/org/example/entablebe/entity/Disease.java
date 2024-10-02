@@ -15,8 +15,7 @@ import java.util.Set;
         @NamedQuery(name = "Disease.fetchAllDiseaseForUser",
                 query = "select d from Disease d " +
                         "left join fetch d.treatments t " +
-                        "left join  fetch t.competences c " +
-                        "where (c.id is not null AND c.userEntangle.id =:userId) or t.id is null"
+                        "where (t.treatmentType is not null AND t.treatmentType in :userTreatmentTypes) or t.id is null"
         )
 })
 public class Disease {

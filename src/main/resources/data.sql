@@ -18,30 +18,28 @@ create table ent_disease
 
 create table ent_treatment
 (
-    id          numeric not null primary key,
-    description text,
-    user_id     numeric default null,
-    disease_id  numeric default null,
-    constraint fk_user_id foreign key (user_id) references ent_user (id),
+    id             numeric not null primary key,
+    description    text,
+    treatment_type char(255),
+    user_id        numeric default null,
+    disease_id     numeric default null,
+    constraint fk_treatment_user_id foreign key (user_id) references ent_user (id),
     constraint fk_disease foreign key (disease_id) references ent_disease (id)
 );
 
 create table ent_competence
 (
-    id      numeric not null primary key,
-    type    varchar(255),
-    name    varchar(255),
-    user_id numeric default null,
-    constraint fk_competence_user_id foreign key (user_id) references ent_user (id)
+    id   numeric not null primary key,
+    type varchar(255)
 );
 
-create table ent_treatment_competence
+create table ent_user_competence
 (
-    competence_id numeric default null,
-    treatment_id  numeric default null,
-    primary key (competence_id, treatment_id),
+    competence_id numeric not null,
+    user_id       numeric not null,
+    primary key (competence_id, user_id),
     constraint fk_competence_id foreign key (competence_id) references ent_competence (id),
-    constraint fk_treatment_id foreign key (treatment_id) references ent_treatment (id)
+    constraint fk_user_id foreign key (user_id) references ent_user (id)
 );
 
 commit;
@@ -105,3 +103,17 @@ commit;
 --     -- Left join to fetch competences but restrict them to the user
 --          left join ent_competence C on C.ID = TC.competence_id and C.user_id = 2
 -- where C.ID is not null or T.ID is null;
+insert into ent_competence(id, type)
+values (1, 'D1');
+insert into ent_competence(id, type)
+values (2, 'D2');
+insert into ent_competence(id, type)
+values (3, 'D3');
+insert into ent_competence(id, type)
+values (4, 'D4');
+insert into ent_competence(id, type)
+values (5, 'D5');
+insert into ent_competence(id, type)
+values (6, 'D6');
+insert into ent_competence(id, type)
+values (7, 'D7');

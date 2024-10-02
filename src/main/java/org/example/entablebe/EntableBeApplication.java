@@ -68,8 +68,6 @@ public class EntableBeApplication {
 
                     transactionalEntityManager.persist(userEntangle);
 
-
-                    UserEntangle result = userRepository.fetchUserWithCompetences(1L);
                     insertMockData(transactionalEntityManager, userEntangle);
                     platformTransactionManager.commit(transaction);
                     transactionalEntityManager.close();

@@ -1,5 +1,8 @@
 package org.example.entablebe.utils;
 
+import org.example.entablebe.pojo.generic.GenericSuccessPageableResponse;
+import org.springframework.data.domain.Pageable;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -53,5 +56,15 @@ public class AppUtils {
         byte[] decryptedData = decryptCipher.doFinal(base64Decrypted);
 
         return new String(decryptedData, StandardCharsets.UTF_8);
+    }
+
+    public static  <T> GenericSuccessPageableResponse<T> buildPageableResponse(List<T> payload,
+                                                                       Pageable pageable,
+                                                                       Integer totalCount) {
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int nextPage = totalCount > (pageSize * currentPage) ? currentPage + 1 : currentPage;
+
+        return new GenericSuccessPageableResponse<>(payload, pageSize, currentPage, nextPage, totalCount);
     }
 }

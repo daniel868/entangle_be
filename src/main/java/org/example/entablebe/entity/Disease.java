@@ -16,7 +16,9 @@ import java.util.Set;
                 query = "select d from Disease d " +
                         "left join fetch d.treatments t " +
                         "where (t.treatmentType is not null AND t.treatmentType in :userTreatmentTypes) or t.id is null"
-        )
+        ),
+        @NamedQuery(name = "Disease.countAllDisease",
+                query = "select count(d) from Disease d ")
 })
 public class Disease {
 

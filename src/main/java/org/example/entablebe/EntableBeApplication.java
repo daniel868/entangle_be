@@ -77,13 +77,12 @@ public class EntableBeApplication {
                     }
                     logger.error(e);
                 }
+                EntityManager entityManager = entityManagerFactory.createEntityManager();
+                TypedQuery<Disease> namedQuery = entityManager.createNamedQuery("Disease.fetchAllDiseaseForUser", Disease.class);
+                namedQuery.setParameter("userTreatmentTypes", List.of("D1", "D2"));
+                List<Disease> response = namedQuery.getResultList();
+                logger.debug("Response size: {}", response.size());
             }
-
-            EntityManager entityManager = entityManagerFactory.createEntityManager();
-            TypedQuery<Disease> namedQuery = entityManager.createNamedQuery("Disease.fetchAllDiseaseForUser", Disease.class);
-            namedQuery.setParameter("userTreatmentTypes", List.of("D1", "D2"));
-            List<Disease> response = namedQuery.getResultList();
-            logger.debug("Response size: {}", response.size());
         };
     }
 
@@ -97,16 +96,27 @@ public class EntableBeApplication {
         treatment2.setDescription("treatment1_2");
         treatment2.setTreatmentType("D2");
 
+        Treatment treatment3 = new Treatment();
+        treatment3.setDescription("treatment1_3");
+        treatment3.setTreatmentType("D1");
+
+        Treatment treatment4 = new Treatment();
+        treatment4.setDescription("treatment2_1");
+        treatment4.setTreatmentType("D1");
+
         userEntangle.addTreatment(treatment1);
         userEntangle.addTreatment(treatment2);
+        userEntangle.addTreatment(treatment3);
 
         Disease disease1 = new Disease();
         disease1.setName("disease1");
         disease1.addTreatment(treatment1);
         disease1.addTreatment(treatment2);
+        disease1.addTreatment(treatment3);
 
         Disease disease2 = new Disease();
         disease2.setName("disease2");
+        disease2.addTreatment(treatment4);
 
         entityManager.persist(disease1);
         entityManager.persist(disease2);

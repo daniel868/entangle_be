@@ -104,6 +104,10 @@ public class EntableBeApplication {
         treatment4.setDescription("treatment2_1");
         treatment4.setTreatmentType("D1");
 
+        Treatment treatment5 = new Treatment();
+        treatment5.setDescription("treatment2_3");
+        treatment5.setTreatmentType("D3");
+
         userEntangle.addTreatment(treatment1);
         userEntangle.addTreatment(treatment2);
         userEntangle.addTreatment(treatment3);
@@ -117,6 +121,7 @@ public class EntableBeApplication {
         Disease disease2 = new Disease();
         disease2.setName("disease2");
         disease2.addTreatment(treatment4);
+        disease2.addTreatment(treatment5);
 
         entityManager.persist(disease1);
         entityManager.persist(disease2);

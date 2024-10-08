@@ -43,7 +43,7 @@ public class SecurityConfig {
                     httpHeaders.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
                 })
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/assets/**", "/*.png", "/*.jpg", "/*.ico", "/*.js", "/*.css", "/", "/main",
+                    auth.requestMatchers("/assets/**", "/*.png", "/*.jpg", "/*.ico", "/*.js", "/*.css", "/", "/main", "/add",
                             "/email-validation", "/reset-password-step1", "/reset-password-step2",
                             "/*.html").permitAll(); //static resources
                     auth.requestMatchers("/auth/**").permitAll(); //auth APIS

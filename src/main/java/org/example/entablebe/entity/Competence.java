@@ -14,8 +14,8 @@ public class Competence {
     @SequenceGenerator(name = "competence_sequence_generator", initialValue = 1, allocationSize = 1)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private CompetenceType type;
+    private String type;
 
 }

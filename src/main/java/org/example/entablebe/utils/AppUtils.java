@@ -16,7 +16,6 @@ import static java.util.Arrays.asList;
 public class AppUtils {
     public static final List<String> angularUrls = asList(
             "/main",
-            "/add",
             "/auth"
 //            "/email-validation"
     );
@@ -58,9 +57,9 @@ public class AppUtils {
         return new String(decryptedData, StandardCharsets.UTF_8);
     }
 
-    public static  <T> GenericSuccessPageableResponse<T> buildPageableResponse(List<T> payload,
-                                                                       Pageable pageable,
-                                                                       Integer totalCount) {
+    public static <T> GenericSuccessPageableResponse<T> buildPageableResponse(List<T> payload,
+                                                                              Pageable pageable,
+                                                                              Integer totalCount) {
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int nextPage = totalCount > (pageSize * currentPage) ? currentPage + 1 : currentPage;

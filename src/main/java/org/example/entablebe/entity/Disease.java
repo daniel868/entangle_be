@@ -15,6 +15,7 @@ import java.util.Set;
         @NamedQuery(name = "Disease.fetchAllDiseaseForUser",
                 query = "select d from Disease d " +
                         "left join fetch d.treatments t " +
+                        "left join fetch t.items " +
                         "where (t.treatmentType is not null AND t.treatmentType in :userTreatmentTypes) or t.id is null " +
                         "order by d.name asc"
         ),

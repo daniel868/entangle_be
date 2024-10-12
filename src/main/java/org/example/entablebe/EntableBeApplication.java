@@ -79,7 +79,7 @@ public class EntableBeApplication {
                 }
                 EntityManager entityManager = entityManagerFactory.createEntityManager();
                 TypedQuery<Disease> namedQuery = entityManager.createNamedQuery("Disease.fetchAllDiseaseForUser", Disease.class);
-                namedQuery.setParameter("userTreatmentTypes", List.of("D1", "D2"));
+                namedQuery.setParameter("userTreatmentTypes", List.of(CompetenceType.D1.getName(), CompetenceType.D2.getName()));
                 List<Disease> response = namedQuery.getResultList();
                 logger.debug("Response size: {}", response.size());
             }
@@ -90,27 +90,31 @@ public class EntableBeApplication {
                                 UserEntangle userEntangle) {
         Treatment treatment1 = new Treatment();
         treatment1.setDescription("treatment1_1");
-        treatment1.setTreatmentType("D1");
+        treatment1.setTreatmentType(CompetenceType.D1.getName());
+
+        TreatmentItem item1 = new TreatmentItem();
+        item1.setDescription("Treatment_item_1");
+        item1.setType(CompetenceType.D1.getName());
+        treatment1.addTreatmentItem(item1);
+
 
         Treatment treatment2 = new Treatment();
         treatment2.setDescription("treatment1_2");
-        treatment2.setTreatmentType("D2");
+        treatment2.setTreatmentType(CompetenceType.D2.getName());
 
         Treatment treatment3 = new Treatment();
         treatment3.setDescription("treatment1_3");
-        treatment3.setTreatmentType("D1");
+        treatment3.setTreatmentType(CompetenceType.D1.getName());
 
         Treatment treatment4 = new Treatment();
         treatment4.setDescription("treatment2_1");
-        treatment4.setTreatmentType("D1");
+        treatment4.setTreatmentType(CompetenceType.D1.getName());
 
-        Treatment treatment5 = new Treatment();
-        treatment5.setDescription("treatment2_3");
-        treatment5.setTreatmentType("D3");
 
         userEntangle.addTreatment(treatment1);
         userEntangle.addTreatment(treatment2);
         userEntangle.addTreatment(treatment3);
+        userEntangle.addTreatment(treatment4);
 
         Disease disease1 = new Disease();
         disease1.setName("disease1");
@@ -121,7 +125,6 @@ public class EntableBeApplication {
         Disease disease2 = new Disease();
         disease2.setName("disease2");
         disease2.addTreatment(treatment4);
-        disease2.addTreatment(treatment5);
 
         entityManager.persist(disease1);
         entityManager.persist(disease2);

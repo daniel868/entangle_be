@@ -37,7 +37,7 @@ public class MedicalServiceImpl implements MedicalService {
         UserEntangle user = userRepository.fetchUserWithCompetences(userId);
         List<String> userCompetenceType = user.getCompetences()
                 .stream()
-                .map(competence -> competence.getType().getName())
+                .map(Competence::getType)
                 .toList();
 
         EntityManager transactionEntityManager = HibernateUtils.getTransactionEntityManager(entityManagerFactory);
@@ -65,12 +65,14 @@ public class MedicalServiceImpl implements MedicalService {
                 List<TreatmentDto> diseaseTypeTreatments = response.get(treatmentType);
                 TreatmentDto newTreatment = new TreatmentDto();
                 newTreatment.setDescription(treatment.getDescription());
+                newTreatment.setSpecialistName(treatment.getUser().getUsername());
                 diseaseTypeTreatments.add(newTreatment);
                 response.put(treatmentType, diseaseTypeTreatments);
             } else {
                 List<TreatmentDto> treatmentDtoList = new ArrayList<>();
                 TreatmentDto newTreatment = new TreatmentDto();
                 newTreatment.setDescription(treatment.getDescription());
+                newTreatment.setSpecialistName(treatment.getUser().getUsername());
                 treatmentDtoList.add(newTreatment);
                 response.put(treatmentType, treatmentDtoList);
             }

@@ -42,12 +42,22 @@ create table ent_user_competence
     constraint fk_user_id foreign key (user_id) references ent_user (id)
 );
 
+create table ent_treatment_item
+(
+    id           numeric not null primary key,
+    type         text,
+    description  text,
+    treatment_id numeric default null,
+    constraint fk_treatment_id_item foreign key (treatment_id) references ent_treatment (id)
+);
+
 commit;
 
 create sequence ent_user_sequence increment 1 minvalue 1;
 create sequence treatment_sequence_generator increment 1 minvalue 1;
 create sequence disease_sequence_generator increment 1 minvalue 1;
 create sequence competence_sequence_generator increment 1 minvalue 1;
+create sequence treatment_item_sequence increment 1 minvalue 1;
 
 -- init data
 -- insert into ent_user(id, username)
@@ -104,16 +114,16 @@ commit;
 --          left join ent_competence C on C.ID = TC.competence_id and C.user_id = 2
 -- where C.ID is not null or T.ID is null;
 insert into ent_competence(id, type)
-values (1, 'D1');
+values (1, 'D1 Physical');
 insert into ent_competence(id, type)
-values (2, 'D2');
+values (2, 'D2 Social');
 insert into ent_competence(id, type)
-values (3, 'D3');
+values (3, 'D3 Occupational');
 insert into ent_competence(id, type)
-values (4, 'D4');
+values (4, 'D4 Emotional');
 insert into ent_competence(id, type)
-values (5, 'D5');
+values (5, 'D5 Intellectual');
 insert into ent_competence(id, type)
-values (6, 'D6');
+values (6, 'D6 Environmental');
 insert into ent_competence(id, type)
-values (7, 'D7');
+values (7, 'D7 Spiritual');

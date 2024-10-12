@@ -9,4 +9,5 @@ import lombok.ToString;
 @ToString
 public class TreatmentDto {
     private String description;
+    private String specialistName;
 }

@@ -109,12 +109,21 @@ public class EntableBeApplication {
             itemTreatment4.setType(CompetenceType.D4.getName());
             treatment4.addTreatmentItem(itemTreatment4);
 
+
+            Treatment treatment3 = new Treatment();
+            TreatmentItem item3 = new TreatmentItem();
+            item3.setDescription("Treatment_item_1");
+            item3.setType(CompetenceType.D3.getName());
+            treatment3.addTreatmentItem(item3);
+
             userEntangle.addTreatment(treatment1);
             userEntangle.addTreatment(treatment4);
+            userEntangle.addTreatment(treatment3);
 
             Disease disease1 = new Disease();
             disease1.setName("disease1");
             disease1.addTreatment(treatment1);
+            disease1.addTreatment(treatment3);
 
             Disease disease2 = new Disease();
             disease2.setName("disease2");

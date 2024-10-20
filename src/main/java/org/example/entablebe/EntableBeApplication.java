@@ -24,6 +24,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 @SpringBootApplication
 @EnableAsync
@@ -79,7 +80,6 @@ public class EntableBeApplication {
                 }
                 EntityManager entityManager = entityManagerFactory.createEntityManager();
                 TypedQuery<Disease> namedQuery = entityManager.createNamedQuery("Disease.fetchAllDiseaseForUser", Disease.class);
-                namedQuery.setParameter("userTreatmentTypes", List.of(CompetenceType.D1.getName(), CompetenceType.D2.getName()));
                 List<Disease> response = namedQuery.getResultList();
                 logger.debug("Response size: {}", response.size());
             }
@@ -88,46 +88,41 @@ public class EntableBeApplication {
 
     private void insertMockData(EntityManager entityManager,
                                 UserEntangle userEntangle) {
-        Treatment treatment1 = new Treatment();
-        treatment1.setDescription("treatment1_1");
-        treatment1.setTreatmentType(CompetenceType.D1.getName());
+        IntStream.range(0, 4).forEach(i -> {
+            logger.debug("Index : {}", i);
+            Treatment treatment1 = new Treatment();
 
-        TreatmentItem item1 = new TreatmentItem();
-        item1.setDescription("Treatment_item_1");
-        item1.setType(CompetenceType.D1.getName());
-        treatment1.addTreatmentItem(item1);
+            TreatmentItem item1 = new TreatmentItem();
+            item1.setDescription("Treatment_item_1");
+            item1.setType(CompetenceType.D1.getName());
 
+            TreatmentItem item2 = new TreatmentItem();
+            item2.setDescription("Treatment_item_2");
+            item2.setType(CompetenceType.D2.getName());
 
-        Treatment treatment2 = new Treatment();
-        treatment2.setDescription("treatment1_2");
-        treatment2.setTreatmentType(CompetenceType.D2.getName());
+            treatment1.addTreatmentItem(item1);
+            treatment1.addTreatmentItem(item2);
 
-        Treatment treatment3 = new Treatment();
-        treatment3.setDescription("treatment1_3");
-        treatment3.setTreatmentType(CompetenceType.D1.getName());
+            Treatment treatment4 = new Treatment();
+            TreatmentItem itemTreatment4 = new TreatmentItem();
+            itemTreatment4.setDescription("Treatment_item_4");
+            itemTreatment4.setType(CompetenceType.D4.getName());
+            treatment4.addTreatmentItem(itemTreatment4);
 
-        Treatment treatment4 = new Treatment();
-        treatment4.setDescription("treatment2_1");
-        treatment4.setTreatmentType(CompetenceType.D1.getName());
+            userEntangle.addTreatment(treatment1);
+            userEntangle.addTreatment(treatment4);
 
+            Disease disease1 = new Disease();
+            disease1.setName("disease1");
+            disease1.addTreatment(treatment1);
 
-        userEntangle.addTreatment(treatment1);
-        userEntangle.addTreatment(treatment2);
-        userEntangle.addTreatment(treatment3);
-        userEntangle.addTreatment(treatment4);
+            Disease disease2 = new Disease();
+            disease2.setName("disease2");
+            disease2.addTreatment(treatment4);
+            entityManager.persist(disease1);
+            entityManager.persist(disease2);
+        });
 
-        Disease disease1 = new Disease();
-        disease1.setName("disease1");
-        disease1.addTreatment(treatment1);
-        disease1.addTreatment(treatment2);
-        disease1.addTreatment(treatment3);
-
-        Disease disease2 = new Disease();
-        disease2.setName("disease2");
-        disease2.addTreatment(treatment4);
-
-        entityManager.persist(disease1);
-        entityManager.persist(disease2);
         entityManager.persist(userEntangle);
     }
 }

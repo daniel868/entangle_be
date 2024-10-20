@@ -24,8 +24,12 @@ public class AppUtils {
         return angularUrls.contains(url);
     }
 
+    private static byte[] buildKeyBites(String key) {
+        return Arrays.copyOf(key.getBytes(StandardCharsets.UTF_8), 32);
+    }
+
     public static String encrypt(String dataToEncrypt, String key) throws Exception {
-        byte[] keyBytes = Arrays.copyOf(key.getBytes(StandardCharsets.UTF_8), 32);
+        byte[] keyBytes = buildKeyBites(key);
 
         SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
         byte[] iv = new byte[16];
@@ -41,7 +45,7 @@ public class AppUtils {
     }
 
     public static String decrypt(String dataToDecrypt, String key) throws Exception {
-        byte[] keyBytes = Arrays.copyOf(key.getBytes(StandardCharsets.UTF_8), 32);
+        byte[] keyBytes = buildKeyBites(key);
 
         SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
         byte[] iv = new byte[16];

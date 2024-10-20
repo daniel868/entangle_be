@@ -17,12 +17,6 @@ public class Treatment {
     @SequenceGenerator(name = "treatment_sequence_generator", initialValue = 1, allocationSize = 1)
     private Long id;
 
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "treatment_type")
-    private String treatmentType;
-
     @ManyToOne(fetch = FetchType.EAGER, cascade = {
             CascadeType.MERGE,
             CascadeType.PERSIST,

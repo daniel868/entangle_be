@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,8 +20,7 @@ public class Treatment {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {
             CascadeType.MERGE,
-            CascadeType.PERSIST,
-            CascadeType.DETACH
+            CascadeType.PERSIST
     })
     @JoinColumn(name = "user_id")
     private UserEntangle user;
@@ -38,5 +38,9 @@ public class Treatment {
             items = new HashSet<>();
         }
         items.add(item);
+    }
+
+    public void addTreatmentItems(Set<TreatmentItem> newItems) {
+        newItems.forEach(this::addTreatmentItem);
     }
 }

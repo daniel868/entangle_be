@@ -17,10 +17,7 @@ import org.jsoup.safety.Safelist;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -43,7 +40,7 @@ public class UserInfoController {
     }
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
-    public Object changeUserPassword(ChangePasswordRequest changePasswordRequest) {
+    public Object changeUserPassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         Jsoup.clean(changePasswordRequest.toString(), Safelist.basic());
         if (changePasswordRequest.getNewPassword().isEmpty() || changePasswordRequest.getCurrentPassword().isEmpty()) {
             return new GenericErrorResponse(

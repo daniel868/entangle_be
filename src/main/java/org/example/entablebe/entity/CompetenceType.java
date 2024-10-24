@@ -15,8 +15,8 @@ public enum CompetenceType {
 
     D7("D7 Spiritual", 6),
     REMEDIES("Remedies", 7);
-    private String name;
-    private int index;
+    private final String name;
+    private final int index;
 
     CompetenceType(String name, int index) {
         this.name = name;

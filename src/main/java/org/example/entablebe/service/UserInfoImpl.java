@@ -4,15 +4,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.entablebe.entity.UserEntangle;
 import org.example.entablebe.exceptions.PasswordDoesNotMatchException;
+import org.example.entablebe.pojo.auth.AuthenticateResponse;
 import org.example.entablebe.pojo.generic.GenericErrorResponse;
 import org.example.entablebe.pojo.generic.GenericSuccessResponse;
 import org.example.entablebe.pojo.userInfo.ChangePasswordRequest;
 import org.example.entablebe.pojo.userInfo.UserInfoResponse;
 import org.example.entablebe.repository.UserRepository;
 import org.example.entablebe.utils.AppConstants;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,8 +85,8 @@ public class UserInfoImpl implements UserInfoService {
         UserEntangle userEntangle = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
         userEntangle.setUsername(newUsername);
-        userRepository.save(userEntangle);
-        logger.debug("Username changed for userId: {}", userId);
+        UserEntangle userSaved = userRepository.save(userEntangle);
+        logger.debug("Username changed for userId: {}", userSaved.getId());
 
         response.put("success", true);
         return response;

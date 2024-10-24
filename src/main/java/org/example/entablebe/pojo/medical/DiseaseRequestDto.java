@@ -1,16 +1,15 @@
 package org.example.entablebe.pojo.medical;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.List;
 
 @Getter
 @Setter
-@ToString
-public class DiseaseDto {
-    private Long id;
+@NoArgsConstructor
+public class DiseaseRequestDto {
     private String diseaseName;
-    private List<TreatmentDto> treatments;
+    private List<TreatmentItemDto> items;
 }

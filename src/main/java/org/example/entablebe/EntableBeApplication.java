@@ -3,7 +3,6 @@ package org.example.entablebe;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
-import org.apache.catalina.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.entablebe.entity.*;
@@ -79,7 +78,8 @@ public class EntableBeApplication {
                     logger.error(e);
                 }
                 EntityManager entityManager = entityManagerFactory.createEntityManager();
-                TypedQuery<Disease> namedQuery = entityManager.createNamedQuery("Disease.fetchAllDiseaseForUser", Disease.class);
+                TypedQuery<Disease> namedQuery = entityManager.createNamedQuery("Disease.fetchAllAvailableDisease", Disease.class);
+                namedQuery.setParameter("searchString", "%");
                 List<Disease> response = namedQuery.getResultList();
                 logger.debug("Response size: {}", response.size());
             }

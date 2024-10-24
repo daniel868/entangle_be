@@ -19,6 +19,10 @@ import java.util.Set;
         @NamedQuery(
                 name = "UserEntangle.fetchUserWithCompetences",
                 query = "select us from UserEntangle us left join fetch us.competences where us.id =: userId"
+        ),
+        @NamedQuery(
+                name = "UserEntangle.fetchUserById",
+                query = "select us from UserEntangle us where us.id =:userId"
         )
 })
 public class UserEntangle implements UserDetails {
@@ -54,7 +58,6 @@ public class UserEntangle implements UserDetails {
     @OneToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE,
-            CascadeType.REFRESH
     })
     @JoinColumn(name = "user_id")
     private Set<Treatment> treatments;

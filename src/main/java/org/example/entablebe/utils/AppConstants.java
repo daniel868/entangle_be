@@ -11,4 +11,5 @@ public class AppConstants {
     public static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     public static final Pattern EMAIL_PATTERN = Pattern.compile(AppConstants.EMAIL_REGEX);
 
+    public static final String LIKE_OPERATOR = "%";
 }

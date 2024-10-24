@@ -12,15 +12,21 @@ import java.util.Set;
 @Setter
 @Entity
 @NamedQueries(value = {
-        @NamedQuery(name = "Disease.fetchAllDiseaseForUser",
+        @NamedQuery(name = "Disease.fetchAllAvailableDisease",
                 query = "select d from Disease d " +
                         "left join fetch d.treatments t " +
                         "left join fetch t.items item " +
+                        "where lower(d.name) like lower(:searchString) " +
                         "order by d.name asc"
         ),
+        @NamedQuery(name = "Disease.fetchDiseaseById",
+                query = "select d from Disease d " +
+                        "left join fetch d.treatments t " +
+                        "where d.id =:diseaseId"),
         @NamedQuery(
                 name = "Disease.countAllDisease",
-                query = "select count(d) from Disease d "
+                query = "select count(d) from Disease d " +
+                        "where lower(d.name) like lower(:searchString) "
         )
 })
 public class Disease {
@@ -36,7 +42,8 @@ public class Disease {
     @OneToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
-            CascadeType.PERSIST
+            CascadeType.PERSIST,
+            CascadeType.REMOVE
     })
     @JoinColumn(name = "disease_id")
     private Set<Treatment> treatments;

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 
@@ -195,7 +196,7 @@ public class AuthServiceImpl implements AuthService {
         String tokenPayload = "{username:" + username + "}";
         String encryptedToken = AppUtils.encrypt(tokenPayload, cypherEncryptionKey);
 
-        return URLEncoder.encode(encryptedToken, "UTF-8");
+        return URLEncoder.encode(encryptedToken, StandardCharsets.UTF_8);
     }
 
     private String extractUsername(String decryptedPayload) {

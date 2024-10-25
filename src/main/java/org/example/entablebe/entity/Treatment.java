@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,6 +32,9 @@ public class Treatment {
     )
     @JoinColumn(name = "treatment_id")
     private Set<TreatmentItem> items;
+
+    @Column(name = "insert_date")
+    private Date insertDate;
 
     public void addTreatmentItem(TreatmentItem item) {
         if (items == null) {

@@ -18,11 +18,10 @@ create table ent_disease
 
 create table ent_treatment
 (
-    id             numeric not null primary key,
-    description    text,
-    treatment_type char(255),
-    user_id        numeric default null,
-    disease_id     numeric default null,
+    id          numeric not null primary key,
+    insert_date timestamp default null,
+    user_id     numeric   default null,
+    disease_id  numeric   default null,
     constraint fk_treatment_user_id foreign key (user_id) references ent_user (id),
     constraint fk_disease foreign key (disease_id) references ent_disease (id)
 );

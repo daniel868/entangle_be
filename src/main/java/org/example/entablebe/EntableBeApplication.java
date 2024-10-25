@@ -22,6 +22,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -41,6 +42,7 @@ public class EntableBeApplication {
     public static void main(String[] args) {
         SpringApplication.run(EntableBeApplication.class, args);
     }
+
 
     @Bean
     ApplicationRunner init(PlatformTransactionManager platformTransactionManager,
@@ -91,6 +93,7 @@ public class EntableBeApplication {
         IntStream.range(0, 4).forEach(i -> {
             logger.debug("Index : {}", i);
             Treatment treatment1 = new Treatment();
+            treatment1.setInsertDate(new Date());
 
             TreatmentItem item1 = new TreatmentItem();
             item1.setDescription("Treatment_item_1");
@@ -104,6 +107,7 @@ public class EntableBeApplication {
             treatment1.addTreatmentItem(item2);
 
             Treatment treatment4 = new Treatment();
+            treatment4.setInsertDate(new Date());
             TreatmentItem itemTreatment4 = new TreatmentItem();
             itemTreatment4.setDescription("Treatment_item_4");
             itemTreatment4.setType(CompetenceType.D4.getName());
@@ -111,6 +115,7 @@ public class EntableBeApplication {
 
 
             Treatment treatment3 = new Treatment();
+            treatment3.setInsertDate(new Date());
             TreatmentItem item3 = new TreatmentItem();
             item3.setDescription("Treatment_item_1");
             item3.setType(CompetenceType.D3.getName());

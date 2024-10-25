@@ -32,6 +32,8 @@ public class MedicalServiceImpl implements MedicalService {
     private final EntityManagerFactory entityManagerFactory;
     private final UserRepository userRepository;
 
+    private final Comparator<Treatment> treatmentComparator = Comparator.comparing(Treatment::getInsertDate);
+
     public MedicalServiceImpl(DiseaseRepository diseaseRepository, EntityManagerFactory entityManagerFactory, UserRepository userRepository) {
         this.diseaseRepository = diseaseRepository;
         this.entityManagerFactory = entityManagerFactory;
@@ -99,6 +101,7 @@ public class MedicalServiceImpl implements MedicalService {
         Treatment newTreatment = new Treatment();
         newTreatment.setUser(userEntangle);
         newTreatment.addTreatmentItems(items);
+        newTreatment.setInsertDate(new Date());
 
         diseaseById.addTreatment(newTreatment);
 
@@ -121,6 +124,7 @@ public class MedicalServiceImpl implements MedicalService {
         if (!diseaseRequestDto.getItems().isEmpty()) {
             Treatment treatment = new Treatment();
             treatment.setUser(userEntangle);
+            treatment.setInsertDate(new Date());
 
             Set<TreatmentItem> treatmentItems = diseaseRequestDto.getItems().stream().map(itemDto -> {
                 TreatmentItem item = new TreatmentItem();
@@ -153,14 +157,16 @@ public class MedicalServiceImpl implements MedicalService {
     }
 
     private List<TreatmentDto> mapTreatmentForDisease(Disease disease) {
-        return disease.getTreatments().stream().map(treatment -> {
-            TreatmentDto treatmentDto = new TreatmentDto();
-            treatmentDto.setSpecialistName(treatment.getUser().getUsername());
-            if (!treatment.getItems().isEmpty()) {
-                treatmentDto.setItems(mapItemsToItemsDto(treatment.getItems()));
-            }
-            return treatmentDto;
-        }).toList();
+        return disease.getTreatments().stream()
+                .sorted(treatmentComparator)
+                .map(treatment -> {
+                    TreatmentDto treatmentDto = new TreatmentDto();
+                    treatmentDto.setSpecialistName(treatment.getUser().getUsername());
+                    if (!treatment.getItems().isEmpty()) {
+                        treatmentDto.setItems(mapItemsToItemsDto(treatment.getItems()));
+                    }
+                    return treatmentDto;
+                }).toList();
     }
 
     private List<TreatmentItemDto> mapItemsToItemsDto(Set<TreatmentItem> treatmentItems) {

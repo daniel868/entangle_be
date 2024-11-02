@@ -64,4 +64,10 @@ public class MedicalController {
         response.put("success", result);
         return new GenericSuccessResponse<>(response);
     }
+
+    @RequestMapping(value = "/treatmentItems", method = RequestMethod.GET)
+    public Object getTreatmentItems(@RequestParam("searchString") String searchString) {
+        List<TreatmentItemDto> response = medicalService.getTreatmentItem(searchString);
+        return new GenericSuccessResponse<>(response);
+    }
 }

@@ -20,4 +20,11 @@ public class HibernateUtils {
         query.setFirstResult(firstResult);
         query.setMaxResults(pageSize);
     }
+
+    public static String buildSearchString(String searchString) {
+        if (searchString == null) {
+            return AppConstants.LIKE_OPERATOR;
+        }
+        return searchString + AppConstants.LIKE_OPERATOR;
+    }
 }

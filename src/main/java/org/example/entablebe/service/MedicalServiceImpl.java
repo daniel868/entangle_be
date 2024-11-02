@@ -8,11 +8,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.entablebe.entity.*;
 import org.example.entablebe.pojo.generic.GenericSuccessPageableResponse;
+import org.example.entablebe.pojo.generic.GenericSuccessResponse;
 import org.example.entablebe.pojo.medical.DiseaseDto;
 import org.example.entablebe.pojo.medical.DiseaseRequestDto;
 import org.example.entablebe.pojo.medical.TreatmentDto;
 import org.example.entablebe.pojo.medical.TreatmentItemDto;
 import org.example.entablebe.repository.DiseaseRepository;
+import org.example.entablebe.repository.MedicalRepository;
 import org.example.entablebe.repository.UserRepository;
 import org.example.entablebe.utils.AppConstants;
 import org.example.entablebe.utils.AppUtils;
@@ -21,7 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,20 +32,22 @@ public class MedicalServiceImpl implements MedicalService {
     private final DiseaseRepository diseaseRepository;
     private final EntityManagerFactory entityManagerFactory;
     private final UserRepository userRepository;
+    private final MedicalRepository medicalRepository;
 
     private final Comparator<Treatment> treatmentComparator = Comparator.comparing(Treatment::getInsertDate);
 
-    public MedicalServiceImpl(DiseaseRepository diseaseRepository, EntityManagerFactory entityManagerFactory, UserRepository userRepository) {
+    public MedicalServiceImpl(DiseaseRepository diseaseRepository, EntityManagerFactory entityManagerFactory, UserRepository userRepository, MedicalRepository medicalRepository) {
         this.diseaseRepository = diseaseRepository;
         this.entityManagerFactory = entityManagerFactory;
         this.userRepository = userRepository;
+        this.medicalRepository = medicalRepository;
     }
 
     @Override
     public GenericSuccessPageableResponse<DiseaseDto> getAllDiseaseForUser(Long userId, Pageable pageable, String searchString) {
         EntityManager transactionEntityManager = HibernateUtils.getTransactionEntityManager(entityManagerFactory);
         TypedQuery<Disease> query = transactionEntityManager.createNamedQuery("Disease.fetchAllAvailableDisease", Disease.class);
-        String search = buildSearchString(searchString);
+        String search = HibernateUtils.buildSearchString(searchString);
         query.setParameter("searchString", search);
 
         HibernateUtils.applyPaginationOnQuery(pageable, query);
@@ -143,6 +146,17 @@ public class MedicalServiceImpl implements MedicalService {
     }
 
     @Override
+    public List<TreatmentItemDto> getTreatmentItem(String searchString) {
+        List<TreatmentItem> treatmentItems = medicalRepository.fetchMatchTreatmentItems(searchString);
+       return treatmentItems.stream().map(item -> {
+            TreatmentItemDto treatmentItemDto = new TreatmentItemDto();
+            treatmentItemDto.setType(item.getType());
+            treatmentItemDto.setDescription(item.getDescription());
+            return treatmentItemDto;
+        }).toList();
+    }
+
+    @Override
     @Transactional
     public boolean removeDisease(Long diseaseId) {
         Disease diseaseById = diseaseRepository.findById(diseaseId).orElse(null);
@@ -190,10 +204,4 @@ public class MedicalServiceImpl implements MedicalService {
         return itemList;
     }
 
-    private String buildSearchString(String searchString) {
-        if (searchString == null) {
-            return AppConstants.LIKE_OPERATOR;
-        }
-        return searchString + AppConstants.LIKE_OPERATOR;
-    }
 }

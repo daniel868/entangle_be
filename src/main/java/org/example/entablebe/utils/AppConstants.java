@@ -12,4 +12,5 @@ public class AppConstants {
     public static final Pattern EMAIL_PATTERN = Pattern.compile(AppConstants.EMAIL_REGEX);
 
     public static final String LIKE_OPERATOR = "%";
+    public static final Integer DEFAULT_PAGE_SIZE = 50;
 }

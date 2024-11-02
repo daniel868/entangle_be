@@ -8,6 +8,12 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "ent_treatment_item")
+@NamedQueries(value = {
+        @NamedQuery(
+                name = "TreatmentItem.fetchMatchTreatmentItems",
+                query = "select item from TreatmentItem item where UPPER(item.description) like  UPPER(:searchString) order by id asc"
+        )
+})
 public class TreatmentItem {
 
     @Id

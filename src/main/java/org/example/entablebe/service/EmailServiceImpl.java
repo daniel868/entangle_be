@@ -16,6 +16,7 @@ public class EmailServiceImpl implements EmailService {
     @Value("${spring.mail.username}")
     private String smtpUsername;
 
+
     @Value("${base.path}")
     private String basePath;
 

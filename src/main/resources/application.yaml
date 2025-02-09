@@ -42,6 +42,9 @@ jwt:
 
 logging:
   level:
+    com:
+      zaxxer:
+        hikari: TRACE
     org:
       example:
         entablebe*: debug

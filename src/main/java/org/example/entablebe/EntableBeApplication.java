@@ -1,5 +1,7 @@
 package org.example.entablebe;
 
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.HikariPoolMXBean;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -28,6 +31,7 @@ import java.util.stream.IntStream;
 
 @SpringBootApplication
 @EnableAsync
+//@EnableScheduling
 public class EntableBeApplication {
     public static final Logger logger = LogManager.getLogger(EntableBeApplication.class);
 
@@ -46,7 +50,8 @@ public class EntableBeApplication {
 
     @Bean
     ApplicationRunner init(PlatformTransactionManager platformTransactionManager,
-                           EntityManagerFactory entityManagerFactory) {
+                           EntityManagerFactory entityManagerFactory,
+                           HikariDataSource hikariDataSource) {
         return args -> {
             if (!env.acceptsProfiles("heroku")) {
                 TransactionDefinition transactionDefinition = new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED);

@@ -14,7 +14,11 @@ public enum CompetenceType {
     D6("D6 Environmental", 5),
 
     D7("D7 Spiritual", 6),
-    REMEDIES("Remedies", 7);
+
+    REMEDIES("Remedies", 7),
+
+    NUTRITION("Nutrition", 8),
+    OTHER("Other requirements", 9);
     private final String name;
     private final int index;
 

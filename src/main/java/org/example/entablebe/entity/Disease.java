@@ -48,6 +48,9 @@ public class Disease {
     @JoinColumn(name = "disease_id")
     private Set<Treatment> treatments;
 
+    @OneToOne(cascade = {CascadeType.PERSIST})
+    @JoinColumn(name = "patient_id", referencedColumnName = "id")
+    private Patient patient;
 
     public void addTreatment(Treatment treatment) {
         if (treatments == null) {

@@ -31,7 +31,7 @@ jwt:
     key: ${JWT_SECRET_KEY}
   expiration:
     duration:
-      minutes: 25
+      minutes: 120
 
 logging:
   level:

@@ -15,6 +15,7 @@ import org.example.entablebe.pojo.medical.TreatmentDto;
 import org.example.entablebe.pojo.medical.TreatmentItemDto;
 import org.example.entablebe.repository.DiseaseRepository;
 import org.example.entablebe.repository.MedicalRepository;
+import org.example.entablebe.repository.PatientRepository;
 import org.example.entablebe.repository.UserRepository;
 import org.example.entablebe.utils.AppConstants;
 import org.example.entablebe.utils.AppUtils;
@@ -145,10 +146,24 @@ public class MedicalServiceImpl implements MedicalService {
         return true;
     }
 
+
+    @Override
+    public Disease initializePatientDisease(String patientContactInfo,
+                                            String patientSituation) {
+        Disease disease = new Disease();
+        disease.setName(patientContactInfo);
+        Patient patient = new Patient();
+        patient.setPatientSituation(patientSituation);
+        patient.setPatientContactInfo(patientContactInfo);
+
+        disease.setPatient(patient);
+        return diseaseRepository.save(disease);
+    }
+
     @Override
     public List<TreatmentItemDto> getTreatmentItem(String searchString) {
         List<TreatmentItem> treatmentItems = medicalRepository.fetchMatchTreatmentItems(searchString);
-       return treatmentItems.stream().map(item -> {
+        return treatmentItems.stream().map(item -> {
             TreatmentItemDto treatmentItemDto = new TreatmentItemDto();
             treatmentItemDto.setType(item.getType());
             treatmentItemDto.setDescription(item.getDescription());

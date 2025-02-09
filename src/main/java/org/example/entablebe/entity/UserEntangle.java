@@ -17,10 +17,6 @@ import java.util.Set;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(
-                name = "UserEntangle.fetchUserWithCompetences",
-                query = "select us from UserEntangle us left join fetch us.competences where us.id =: userId"
-        ),
-        @NamedQuery(
                 name = "UserEntangle.fetchUserById",
                 query = "select us from UserEntangle us where us.id =:userId"
         )

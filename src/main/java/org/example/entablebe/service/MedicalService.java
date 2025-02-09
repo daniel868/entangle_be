@@ -1,5 +1,6 @@
 package org.example.entablebe.service;
 
+import org.example.entablebe.entity.Disease;
 import org.example.entablebe.entity.UserEntangle;
 import org.example.entablebe.pojo.generic.GenericSuccessPageableResponse;
 import org.example.entablebe.pojo.generic.GenericSuccessResponse;
@@ -21,4 +22,6 @@ public interface MedicalService {
     boolean removeDisease(Long diseaseId);
 
     boolean addNewDisease(Long userId, DiseaseRequestDto diseaseRequestDto);
+
+    Disease initializePatientDisease(String patientContactInfo, String patientSituation);
 }

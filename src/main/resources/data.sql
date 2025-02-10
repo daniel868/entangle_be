@@ -10,10 +10,21 @@ create table ent_user
     account_activate       boolean
 );
 
+create table ent_patient
+(
+    id                   bigint not null
+        primary key,
+    patient_contact_info varchar(255),
+    patient_situation    varchar(255)
+);
+
+
 create table ent_disease
 (
     id   numeric not null primary key,
-    name text
+    name text,
+    patient_id numeric,
+    constraint fk_patient_id foreign key (patient_id) references ent_patient(id)
 );
 
 create table ent_treatment
@@ -50,6 +61,16 @@ create table ent_treatment_item
     constraint fk_treatment_id_item foreign key (treatment_id) references ent_treatment (id)
 );
 
+create table contact_ent
+(
+    id                bigint not null  primary key,
+    contact_method    varchar(255),
+    created_date      timestamp(6),
+    description       varchar(255),
+    notification_send boolean
+);
+
+
 commit;
 
 create sequence ent_user_sequence increment 1 minvalue 1;
@@ -57,6 +78,8 @@ create sequence treatment_sequence_generator increment 1 minvalue 1;
 create sequence disease_sequence_generator increment 1 minvalue 1;
 create sequence competence_sequence_generator increment 1 minvalue 1;
 create sequence treatment_item_sequence increment 1 minvalue 1;
+create sequence patient_sequence_generator increment 1 minvalue 1;
+create sequence contact_sequence_generator increment 1 minvalue 1;
 
 -- init data
 -- insert into ent_user(id, username)

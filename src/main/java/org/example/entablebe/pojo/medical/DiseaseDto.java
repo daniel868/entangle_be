@@ -13,4 +13,5 @@ public class DiseaseDto {
     private Long id;
     private String diseaseName;
     private List<TreatmentDto> treatments;
+    private String patientSituation;
 }

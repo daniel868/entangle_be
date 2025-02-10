@@ -59,6 +59,9 @@ public class MedicalServiceImpl implements MedicalService {
             diseaseDto.setId(disease.getId());
             diseaseDto.setDiseaseName(disease.getName());
             diseaseDto.setTreatments(mapTreatmentForDisease(disease));
+            if (disease.getPatient() != null) {
+                diseaseDto.setPatientSituation(disease.getPatient().getPatientSituation());
+            }
             return diseaseDto;
         }).toList();
 

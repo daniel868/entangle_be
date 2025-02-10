@@ -46,6 +46,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/assets/**", "/*.png", "/*.jpg", "/*.ico", "/*.js", "/*.css", "/", "/main", "/add",
                             "/email-validation", "/reset-password-step1", "/reset-password-step2",
                             "/*.html").permitAll(); //static resources
+                    auth.requestMatchers("/patient/contact").permitAll(); //intake form
                     auth.requestMatchers("/auth/**").permitAll(); //auth APIS
                     auth.requestMatchers("/console/**").permitAll();//testing console H2
                     auth.anyRequest().permitAll();

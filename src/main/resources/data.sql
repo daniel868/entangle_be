@@ -15,16 +15,17 @@ create table ent_patient
     id                   bigint not null
         primary key,
     patient_contact_info varchar(255),
-    patient_situation    varchar(255)
+    patient_situation    varchar(255),
+    patient_name         varchar(255)
 );
 
 
 create table ent_disease
 (
-    id   numeric not null primary key,
-    name text,
+    id         numeric not null primary key,
+    name       text,
     patient_id numeric,
-    constraint fk_patient_id foreign key (patient_id) references ent_patient(id)
+    constraint fk_patient_id foreign key (patient_id) references ent_patient (id)
 );
 
 create table ent_treatment
@@ -63,10 +64,11 @@ create table ent_treatment_item
 
 create table contact_ent
 (
-    id                bigint not null  primary key,
+    id                bigint not null primary key,
     contact_method    varchar(255),
     created_date      timestamp(6),
     description       varchar(255),
+    contact_name      varchar(255),
     notification_send boolean
 );
 

@@ -8,4 +8,5 @@ import lombok.Setter;
 public class ContactRequest {
     private String patientSituation;
     private String patientContactInfo;
+    private String patientName;
 }

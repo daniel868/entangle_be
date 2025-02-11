@@ -7,9 +7,12 @@ import org.springframework.context.ApplicationEvent;
 public class ContactEvent extends ApplicationEvent {
     private final String patientContactInfo;
     private final String patientSituation;
-    public ContactEvent(Object source, String patientSituation, String patientContactInfo) {
+    private final String patientName;
+
+    public ContactEvent(Object source, String patientContactInfo, String patientSituation, String patientName) {
         super(source);
-        this.patientContactInfo = patientSituation;
-        this.patientSituation = patientContactInfo;
+        this.patientContactInfo = patientContactInfo;
+        this.patientSituation = patientSituation;
+        this.patientName = patientName;
     }
 }

@@ -34,11 +34,13 @@ public class ContractServiceImpl implements ContactService {
             contactEntangle.setContactMethod(contactRequest.getPatientContactInfo());
             contactEntangle.setDescription(contactRequest.getPatientSituation());
             contactEntangle.setCreatedDate(new Date());
+            contactEntangle.setContactName(contactRequest.getPatientName());
             contactRepository.save(contactEntangle);
 
             ContactEvent event = new ContactEvent(this,
+                    contactRequest.getPatientContactInfo(),
                     contactRequest.getPatientSituation(),
-                    contactRequest.getPatientContactInfo());
+                    contactRequest.getPatientName());
             applicationEventPublisher.publishEvent(event);
             return true;
 

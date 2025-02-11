@@ -23,5 +23,5 @@ public interface MedicalService {
 
     boolean addNewDisease(Long userId, DiseaseRequestDto diseaseRequestDto);
 
-    Disease initializePatientDisease(String patientContactInfo, String patientSituation);
+    Disease initializePatientDisease(String patientContactInfo, String patientSituation, String patientName);
 }

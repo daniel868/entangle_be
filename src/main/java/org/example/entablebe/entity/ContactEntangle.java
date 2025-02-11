@@ -16,6 +16,9 @@ public class ContactEntangle {
     @GeneratedValue(generator = "contact_sequence_generator",strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(name = "contact_name")
+    private String contactName;
+
     @Column(name = "description")
     private String description;
 

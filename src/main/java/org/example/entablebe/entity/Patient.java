@@ -14,6 +14,9 @@ public class Patient {
     @SequenceGenerator(name = "patient_sequence_generator", sequenceName = "patient_sequence_generator", initialValue = 1, allocationSize = 1)
     private Long id;
 
+    @Column(name = "patient_name")
+    private String patientName;
+
     @Column(name = "patient_situation")
     private String patientSituation;
 

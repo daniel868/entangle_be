@@ -16,6 +16,10 @@ public class EntangleEventHandler {
     @EventListener
     @Async("executor")
     public void handleContactEvent(ContactEvent event) {
-       medicalService.initializePatientDisease(event.getPatientContactInfo(),event.getPatientSituation());
+        medicalService.initializePatientDisease(
+                event.getPatientContactInfo(),
+                event.getPatientSituation(),
+                event.getPatientName()
+        );
     }
 }

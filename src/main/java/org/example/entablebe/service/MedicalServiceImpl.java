@@ -152,12 +152,14 @@ public class MedicalServiceImpl implements MedicalService {
 
     @Override
     public Disease initializePatientDisease(String patientContactInfo,
-                                            String patientSituation) {
+                                            String patientSituation,
+                                            String patientName) {
         Disease disease = new Disease();
-        disease.setName(patientContactInfo);
+        disease.setName(patientName);
         Patient patient = new Patient();
         patient.setPatientSituation(patientSituation);
         patient.setPatientContactInfo(patientContactInfo);
+        patient.setPatientName(patientName);
 
         disease.setPatient(patient);
         return diseaseRepository.save(disease);

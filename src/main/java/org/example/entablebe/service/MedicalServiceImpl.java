@@ -8,16 +8,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.entablebe.entity.*;
 import org.example.entablebe.pojo.generic.GenericSuccessPageableResponse;
-import org.example.entablebe.pojo.generic.GenericSuccessResponse;
 import org.example.entablebe.pojo.medical.DiseaseDto;
 import org.example.entablebe.pojo.medical.DiseaseRequestDto;
 import org.example.entablebe.pojo.medical.TreatmentDto;
 import org.example.entablebe.pojo.medical.TreatmentItemDto;
 import org.example.entablebe.repository.DiseaseRepository;
 import org.example.entablebe.repository.MedicalRepository;
-import org.example.entablebe.repository.PatientRepository;
+import org.example.entablebe.repository.TreatmentRepository;
 import org.example.entablebe.repository.UserRepository;
-import org.example.entablebe.utils.AppConstants;
 import org.example.entablebe.utils.AppUtils;
 import org.example.entablebe.utils.HibernateUtils;
 import org.springframework.data.domain.Pageable;
@@ -34,14 +32,16 @@ public class MedicalServiceImpl implements MedicalService {
     private final EntityManagerFactory entityManagerFactory;
     private final UserRepository userRepository;
     private final MedicalRepository medicalRepository;
+    private final TreatmentRepository treatmentRepository;
 
     private final Comparator<Treatment> treatmentComparator = Comparator.comparing(Treatment::getInsertDate);
 
-    public MedicalServiceImpl(DiseaseRepository diseaseRepository, EntityManagerFactory entityManagerFactory, UserRepository userRepository, MedicalRepository medicalRepository) {
+    public MedicalServiceImpl(DiseaseRepository diseaseRepository, EntityManagerFactory entityManagerFactory, UserRepository userRepository, MedicalRepository medicalRepository, TreatmentRepository treatmentRepository) {
         this.diseaseRepository = diseaseRepository;
         this.entityManagerFactory = entityManagerFactory;
         this.userRepository = userRepository;
         this.medicalRepository = medicalRepository;
+        this.treatmentRepository = treatmentRepository;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class MedicalServiceImpl implements MedicalService {
         UserEntangle userEntangle;
         try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
 
-            TypedQuery<Disease> diseaseByIdQuery = entityManager.createNamedQuery("Disease.fetchDiseaseById", Disease.class);
+            TypedQuery<Disease> diseaseByIdQuery = entityManager.createNamedQuery("Disease.fetchDiseaseByIdWithTreatments", Disease.class);
             diseaseByIdQuery.setParameter("diseaseId", diseaseId);
             diseaseById = diseaseByIdQuery.getSingleResult();
             if (diseaseById == null) {
@@ -149,6 +149,38 @@ public class MedicalServiceImpl implements MedicalService {
         return true;
     }
 
+    @Override
+    public boolean updateTreatmentForDisease(Long treatmentId, List<TreatmentItemDto> treatmentItemsDto) {
+        Treatment treatment = treatmentRepository.findTreatmentByIdWithItems(treatmentId);
+        if (treatment == null) {
+            throw new RuntimeException("Could not found treatment with id: " + treatmentId);
+        }
+
+        Set<TreatmentItem> items = treatment.getItems();
+        //new items or updated items
+        Map<String, TreatmentItem> itemsMapping = new HashMap<>();
+        items.forEach(item -> itemsMapping.put(item.getType(), item));
+
+        treatmentItemsDto.stream()
+                .filter(item -> item.getDescription() != null)
+                .forEach(itemDto -> {
+                    TreatmentItem treatmentItem = itemsMapping.get(itemDto.getType());
+                    if (treatmentItem != null && !treatmentItem.getDescription().equals(itemDto.getDescription())) {
+                        treatmentItem.setDescription(itemDto.getDescription());
+                    }
+                    if (treatmentItem == null) {
+                        TreatmentItem newItem = new TreatmentItem();
+                        newItem.setDescription(itemDto.getDescription());
+                        newItem.setType(itemDto.getType());
+                        items.add(newItem);
+                    }
+                });
+
+        //update new treatment items
+        treatmentRepository.save(treatment);
+
+        return true;
+    }
 
     @Override
     public Disease initializePatientDisease(String patientContactInfo,
@@ -196,6 +228,7 @@ public class MedicalServiceImpl implements MedicalService {
                 .map(treatment -> {
                     TreatmentDto treatmentDto = new TreatmentDto();
                     treatmentDto.setSpecialistName(treatment.getUser().getUsername());
+                    treatmentDto.setId(treatment.getId());
                     if (!treatment.getItems().isEmpty()) {
                         treatmentDto.setItems(mapItemsToItemsDto(treatment.getItems()));
                     }

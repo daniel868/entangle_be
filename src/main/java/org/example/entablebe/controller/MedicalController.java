@@ -70,4 +70,12 @@ public class MedicalController {
         List<TreatmentItemDto> response = medicalService.getTreatmentItem(searchString);
         return new GenericSuccessResponse<>(response);
     }
+
+    @RequestMapping(value = "/modifyTreatment/{treatmentId}", method = RequestMethod.PUT)
+    public Object updateTreatment(@RequestBody List<TreatmentItemDto> itemDtoList,
+                                  @PathVariable("treatmentId") Long treatmentId) {
+        boolean response = medicalService.updateTreatmentForDisease(treatmentId, itemDtoList);
+        return new GenericSuccessResponse<>(response);
+    }
+
 }

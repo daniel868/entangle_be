@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 @ToString
 public class TreatmentDto {
+    private Long id;
     private String specialistName;
     private List<TreatmentItemDto> items;
 }

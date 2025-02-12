@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface DiseaseRepository extends JpaRepository<Disease, Long> {
 
     Integer countAllDisease(String searchString);
+
 }

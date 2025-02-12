@@ -19,7 +19,7 @@ import java.util.Set;
                         "where lower(d.name) like lower(:searchString) " +
                         "order by d.name asc"
         ),
-        @NamedQuery(name = "Disease.fetchDiseaseById",
+        @NamedQuery(name = "Disease.fetchDiseaseByIdWithTreatments",
                 query = "select d from Disease d " +
                         "left join fetch d.treatments t " +
                         "where d.id =:diseaseId"),

@@ -1,5 +1,15 @@
 package org.example.entablebe.service;
 
+import com.google.api.core.ApiFuture;
+import com.google.auth.ServiceAccountSigner;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.*;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import jdk.jfr.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.entablebe.entity.UserEntangle;
@@ -22,8 +32,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @Service
@@ -32,10 +50,12 @@ public class UserInfoImpl implements UserInfoService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ExecutorService executorService;
 
-    public UserInfoImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserInfoImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, ExecutorService executors) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.executorService = executors;
     }
 
 
@@ -105,6 +125,63 @@ public class UserInfoImpl implements UserInfoService {
         response.put("success", true);
 
         return response;
+    }
+
+    //TODO: use this method later
+    public Map<String, Object> uploadProfileImage(MultipartFile multipartFile) {
+        try {
+
+            Map<String, Object> response = new HashMap<>();
+            GoogleCredentials googleCredentials = GoogleCredentials.fromStream(Thread.currentThread().
+                    getContextClassLoader().
+                    getResourceAsStream("google_secret.json"));
+
+            BlobId blobId = BlobId.of("test_bucket_upload_image", multipartFile.getOriginalFilename());
+            BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                    .setContentType("media")
+                    .build();
+
+            Storage storage = StorageOptions.newBuilder()
+                    .setCredentials(googleCredentials)
+                    .build()
+                    .getService();
+
+            Blob blob = storage.create(blobInfo, multipartFile.getBytes());
+            URL presignedUrl = storage.signUrl(blobInfo, 15, TimeUnit.DAYS, Storage.SignUrlOption.signWith((ServiceAccountSigner) googleCredentials));
+            response.put("success", presignedUrl);
+            return response;
+        } catch (Exception e) {
+            throw new RuntimeException("Could not upload success profile picture ", e);
+        }
+    }
+
+    public Map<String, Object> uploadProfileImageAsBase64(MultipartFile multipartFile) {
+        try {
+            Map<String, Object> response = new HashMap<>();
+            UserEntangle currentAuth = (UserEntangle) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserEntangle userEntangle = userRepository.findById(currentAuth.getId()).orElse(null);
+            if (userEntangle != null) {
+                String encodedBytes = Base64.getEncoder().encodeToString(multipartFile.getBytes());
+                userEntangle.setProfileImage(encodedBytes);
+                userRepository.save(userEntangle);
+                response.put("success", true);
+            }
+            return response;
+        } catch (Exception e) {
+            throw new RuntimeException("Could not upload success profile picture ", e);
+        }
+    }
+
+    public String loadProfileImageAsBase64(Long userId) {
+        try {
+            UserEntangle userEntangle = userRepository.findById(userId).orElse(null);
+            if (userEntangle == null) {
+                throw new UsernameNotFoundException("Could not found user with id: " + userId);
+            }
+            return userEntangle.getProfileImage();
+        } catch (Exception e) {
+            throw new RuntimeException("Could not load success profile image ", e);
+        }
     }
 
     private Map<String, List<String>> extractCharacteristics(String info, Long userId) {

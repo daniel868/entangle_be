@@ -58,6 +58,10 @@ public class UserEntangle implements UserDetails {
     @JoinColumn(name = "user_id")
     private Set<Treatment> treatments;
 
+    @Lob
+    @Column(name = "profile_image_base64")
+    private String profileImage;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();

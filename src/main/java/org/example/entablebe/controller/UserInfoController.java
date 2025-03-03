@@ -9,18 +9,19 @@ import org.example.entablebe.exceptions.PasswordDoesNotMatchException;
 import org.example.entablebe.pojo.generic.GenericErrorResponse;
 import org.example.entablebe.pojo.generic.GenericSuccessResponse;
 import org.example.entablebe.pojo.userInfo.ChangePasswordRequest;
-import org.example.entablebe.service.UserInfoImpl;
 import org.example.entablebe.service.UserInfoService;
 import org.example.entablebe.utils.AppConstants;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/userInfo")
@@ -124,6 +125,37 @@ public class UserInfoController {
             );
         } catch (Exception e) {
             logger.error("Could not change username for userId: {}", authUser.getId(), e);
+            return new GenericErrorResponse(
+                    AppConstants.INTERNAL_SERVER_ERROR,
+                    HttpStatus.INTERNAL_SERVER_ERROR.value()
+            );
+        }
+    }
+
+    @PostMapping(value = "/uploadProfilePicture")
+    public Object uploadProfilePicture(@RequestParam("file") MultipartFile multipartFile,
+                                       HttpServletRequest request) {
+        logger.debug("Trying to upload file : {}", multipartFile.getOriginalFilename());
+        try {
+            return userInfoService.uploadProfileImageAsBase64(multipartFile);
+        } catch (Exception e) {
+            logger.error("Error while uploading file: {}", multipartFile.getOriginalFilename(), e);
+            return new GenericErrorResponse(
+                    AppConstants.INTERNAL_SERVER_ERROR,
+                    HttpStatus.INTERNAL_SERVER_ERROR.value()
+            );
+        }
+    }
+
+    @RequestMapping(path = "/profilePicture", method = RequestMethod.GET)
+    public Object getProfilePicture() {
+        UserEntangle currentAuth = (UserEntangle) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        logger.debug("Trying to get profile picture for user : {}", currentAuth.getUsername());
+        try {
+            String base64Image = userInfoService.loadProfileImageAsBase64(currentAuth.getId());
+            return new GenericSuccessResponse<>(base64Image);
+        } catch (Exception e) {
+            logger.error("Error while fetching image for user: {}", currentAuth.getUsername(), e);
             return new GenericErrorResponse(
                     AppConstants.INTERNAL_SERVER_ERROR,
                     HttpStatus.INTERNAL_SERVER_ERROR.value()

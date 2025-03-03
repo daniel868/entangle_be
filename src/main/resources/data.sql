@@ -7,6 +7,7 @@ create table ent_user
     email                  varchar(255),
     info                   text,
     validation_email_token varchar(255),
+    profile_image_base64   text,
     account_activate       boolean
 );
 

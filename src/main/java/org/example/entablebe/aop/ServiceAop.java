@@ -23,7 +23,7 @@ public class ServiceAop {
         }
     }
 
-    @Around("execution(* org.example.entablebe.service..*(..)) && !execution(* org.example.entablebe.service.UserInfoService.loadProfileImageAsBase64())")
+    @Around("execution(* org.example.entablebe.service..*(..)) && !execution(* org.example.entablebe.service.UserInfoService.loadProfileImageAsBase64(..))")
     public Object logMethodAndArguments(ProceedingJoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
         Object[] arguments = joinPoint.getArgs();

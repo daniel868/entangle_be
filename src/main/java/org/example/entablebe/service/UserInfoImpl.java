@@ -1,48 +1,27 @@
 package org.example.entablebe.service;
 
-import com.google.api.core.ApiFuture;
 import com.google.auth.ServiceAccountSigner;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import jdk.jfr.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.entablebe.entity.UserEntangle;
 import org.example.entablebe.exceptions.PasswordDoesNotMatchException;
-import org.example.entablebe.pojo.auth.AuthenticateResponse;
-import org.example.entablebe.pojo.generic.GenericErrorResponse;
-import org.example.entablebe.pojo.generic.GenericSuccessResponse;
 import org.example.entablebe.pojo.userInfo.ChangePasswordRequest;
 import org.example.entablebe.pojo.userInfo.UserInfoResponse;
 import org.example.entablebe.repository.UserRepository;
-import org.example.entablebe.utils.AppConstants;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import javax.annotation.Nonnull;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 @Service
 public class UserInfoImpl implements UserInfoService {
@@ -155,7 +134,7 @@ public class UserInfoImpl implements UserInfoService {
         }
     }
 
-    public Map<String, Object> uploadProfileImageAsBase64(MultipartFile multipartFile) {
+    public Map<String, Object> uploadProfileImageAsBase64(@Nonnull MultipartFile multipartFile) {
         try {
             Map<String, Object> response = new HashMap<>();
             UserEntangle currentAuth = (UserEntangle) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

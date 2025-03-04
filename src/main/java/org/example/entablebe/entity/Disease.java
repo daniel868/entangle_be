@@ -45,7 +45,7 @@ public class Disease {
             CascadeType.PERSIST,
             CascadeType.REMOVE
     })
-    @JoinColumn(name = "disease_id")
+    @JoinColumn(name = "disease_id", referencedColumnName = "id")
     private Set<Treatment> treatments;
 
     @OneToOne(cascade = {CascadeType.PERSIST})

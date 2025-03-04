@@ -132,14 +132,14 @@ public class UserInfoController {
         }
     }
 
-    @PostMapping("/uploadProfilePicture")
+    @RequestMapping(value = "/uploadProfilePicture", method = RequestMethod.POST)
     public Object uploadProfilePicture(@RequestParam("file") MultipartFile multipartFile,
                                        HttpServletRequest request) {
-        logger.debug("Trying to upload file : {}", multipartFile.getOriginalFilename());
         try {
-            return userInfoService.uploadProfileImageAsBase64(multipartFile);
+            logger.debug("Trying to upload file : {}", multipartFile.getOriginalFilename());
+            return new GenericSuccessResponse<>(userInfoService.uploadProfileImageAsBase64(multipartFile));
         } catch (Exception e) {
-            logger.error("Error while uploading file: {}", multipartFile.getOriginalFilename(), e);
+            logger.error("Error while uploading file: {}", multipartFile, e);
             return new GenericErrorResponse(
                     AppConstants.INTERNAL_SERVER_ERROR,
                     HttpStatus.INTERNAL_SERVER_ERROR.value()

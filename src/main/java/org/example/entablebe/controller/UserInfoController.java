@@ -132,7 +132,7 @@ public class UserInfoController {
         }
     }
 
-    @PostMapping(value = "/uploadProfilePicture")
+    @PostMapping("/uploadProfilePicture")
     public Object uploadProfilePicture(@RequestParam("file") MultipartFile multipartFile,
                                        HttpServletRequest request) {
         logger.debug("Trying to upload file : {}", multipartFile.getOriginalFilename());

@@ -13,4 +13,6 @@ public class AppConstants {
 
     public static final String LIKE_OPERATOR = "%";
     public static final Integer DEFAULT_PAGE_SIZE = 50;
+
+    public static final Long MB_SIZE_IN_BYTES = 1048576L;
 }

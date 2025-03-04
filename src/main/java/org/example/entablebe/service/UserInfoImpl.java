@@ -10,6 +10,7 @@ import org.example.entablebe.exceptions.PasswordDoesNotMatchException;
 import org.example.entablebe.pojo.userInfo.ChangePasswordRequest;
 import org.example.entablebe.pojo.userInfo.UserInfoResponse;
 import org.example.entablebe.repository.UserRepository;
+import org.example.entablebe.utils.AppConstants;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -139,6 +140,12 @@ public class UserInfoImpl implements UserInfoService {
             Map<String, Object> response = new HashMap<>();
             UserEntangle currentAuth = (UserEntangle) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserEntangle userEntangle = userRepository.findById(currentAuth.getId()).orElse(null);
+
+            if (multipartFile.getSize() > AppConstants.MB_SIZE_IN_BYTES * 10) {
+                logger.debug("Maxim file size exceed for file :{}", multipartFile.getOriginalFilename());
+                throw new RuntimeException("Maxim file size exceed for file " + multipartFile.getOriginalFilename());
+            }
+
             if (userEntangle != null) {
                 String encodedBytes = Base64.getEncoder().encodeToString(multipartFile.getBytes());
                 userEntangle.setProfileImage(encodedBytes);

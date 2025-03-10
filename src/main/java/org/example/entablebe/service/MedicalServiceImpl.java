@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.entablebe.entity.*;
@@ -18,6 +19,7 @@ import org.example.entablebe.repository.TreatmentRepository;
 import org.example.entablebe.repository.UserRepository;
 import org.example.entablebe.utils.AppUtils;
 import org.example.entablebe.utils.HibernateUtils;
+import org.example.entablebe.utils.assemblers.PatientAssembler;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class MedicalServiceImpl implements MedicalService {
     private static final Logger logger = LogManager.getLogger(MedicalServiceImpl.class);
 
@@ -33,16 +36,9 @@ public class MedicalServiceImpl implements MedicalService {
     private final UserRepository userRepository;
     private final MedicalRepository medicalRepository;
     private final TreatmentRepository treatmentRepository;
+    private final PatientAssembler patientAssembler;
 
     private final Comparator<Treatment> treatmentComparator = Comparator.comparing(Treatment::getInsertDate);
-
-    public MedicalServiceImpl(DiseaseRepository diseaseRepository, EntityManagerFactory entityManagerFactory, UserRepository userRepository, MedicalRepository medicalRepository, TreatmentRepository treatmentRepository) {
-        this.diseaseRepository = diseaseRepository;
-        this.entityManagerFactory = entityManagerFactory;
-        this.userRepository = userRepository;
-        this.medicalRepository = medicalRepository;
-        this.treatmentRepository = treatmentRepository;
-    }
 
     @Override
     public GenericSuccessPageableResponse<DiseaseDto> getAllDiseaseForUser(Long userId, Pageable pageable, String searchString) {
@@ -61,6 +57,7 @@ public class MedicalServiceImpl implements MedicalService {
             diseaseDto.setTreatments(mapTreatmentForDisease(disease));
             if (disease.getPatient() != null) {
                 diseaseDto.setPatientSituation(disease.getPatient().getPatientSituation());
+                diseaseDto.setPatientInfo(patientAssembler.assemble(disease.getPatient()));
             }
             return diseaseDto;
         }).toList();

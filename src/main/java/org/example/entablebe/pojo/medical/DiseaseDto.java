@@ -14,4 +14,5 @@ public class DiseaseDto {
     private String diseaseName;
     private List<TreatmentDto> treatments;
     private String patientSituation;
+    private PatientDto patientInfo;
 }

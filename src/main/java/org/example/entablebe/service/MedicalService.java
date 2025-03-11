@@ -4,9 +4,7 @@ import org.example.entablebe.entity.Disease;
 import org.example.entablebe.entity.UserEntangle;
 import org.example.entablebe.pojo.generic.GenericSuccessPageableResponse;
 import org.example.entablebe.pojo.generic.GenericSuccessResponse;
-import org.example.entablebe.pojo.medical.DiseaseDto;
-import org.example.entablebe.pojo.medical.DiseaseRequestDto;
-import org.example.entablebe.pojo.medical.TreatmentItemDto;
+import org.example.entablebe.pojo.medical.*;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -26,4 +24,8 @@ public interface MedicalService {
     Disease initializePatientDisease(String patientContactInfo, String patientSituation, String patientName);
 
     boolean updateTreatmentForDisease(Long treatmentId, List<TreatmentItemDto> treatmentItemsDto);
+
+    MedicalNoteDto addNewNote(MedicalNoteDto dto, Long diseaseId);
+
+    List<MedicalNoteDto> getAllNotesForDisease(Long diseaseId);
 }

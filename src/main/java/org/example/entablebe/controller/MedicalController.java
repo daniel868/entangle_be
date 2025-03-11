@@ -6,6 +6,7 @@ import org.example.entablebe.entity.UserEntangle;
 import org.example.entablebe.pojo.generic.GenericSuccessResponse;
 import org.example.entablebe.pojo.medical.DiseaseDto;
 import org.example.entablebe.pojo.medical.DiseaseRequestDto;
+import org.example.entablebe.pojo.medical.MedicalNoteDto;
 import org.example.entablebe.pojo.medical.TreatmentItemDto;
 import org.example.entablebe.service.MedicalService;
 import org.springframework.data.domain.Pageable;
@@ -78,4 +79,16 @@ public class MedicalController {
         return new GenericSuccessResponse<>(response);
     }
 
+    @RequestMapping(path = "/medical-note/{diseaseId}", method = RequestMethod.POST)
+    public GenericSuccessResponse<MedicalNoteDto> addNewMedicalNote(@RequestBody MedicalNoteDto medicalNoteDto,
+                                                                    @PathVariable("diseaseId") Long diseaseId) {
+        MedicalNoteDto response = medicalService.addNewNote(medicalNoteDto, diseaseId);
+        return new GenericSuccessResponse<>(response);
+    }
+
+    @RequestMapping(path = "/medical-note/{diseaseId}", method = RequestMethod.GET)
+    public GenericSuccessResponse<List<MedicalNoteDto>> getMedicalNoteForDisease(@PathVariable("diseaseId") Long diseaseId) {
+        List<MedicalNoteDto> response = medicalService.getAllNotesForDisease(diseaseId);
+        return new GenericSuccessResponse<>(response);
+    }
 }

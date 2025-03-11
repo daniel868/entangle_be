@@ -2,9 +2,9 @@ package org.example.entablebe.utils.assemblers;
 
 import org.example.entablebe.entity.Patient;
 import org.example.entablebe.pojo.medical.PatientDto;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 public class PatientAssembler {
 
     public PatientDto assemble(Patient patient) {

@@ -52,10 +52,21 @@ public class Disease {
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     private Patient patient;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "disease_id", referencedColumnName = "id")
+    private Set<MedicalNote> medicalNotes;
+
     public void addTreatment(Treatment treatment) {
         if (treatments == null) {
             treatments = new HashSet<>();
         }
         treatments.add(treatment);
+    }
+
+    public void addMedicalNote(MedicalNote note) {
+        if (medicalNotes == null) {
+            medicalNotes = new HashSet<>();
+        }
+        medicalNotes.add(note);
     }
 }

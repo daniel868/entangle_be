@@ -9,18 +9,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.entablebe.entity.*;
 import org.example.entablebe.pojo.generic.GenericSuccessPageableResponse;
-import org.example.entablebe.pojo.medical.DiseaseDto;
-import org.example.entablebe.pojo.medical.DiseaseRequestDto;
-import org.example.entablebe.pojo.medical.TreatmentDto;
-import org.example.entablebe.pojo.medical.TreatmentItemDto;
-import org.example.entablebe.repository.DiseaseRepository;
-import org.example.entablebe.repository.MedicalRepository;
-import org.example.entablebe.repository.TreatmentRepository;
-import org.example.entablebe.repository.UserRepository;
+import org.example.entablebe.pojo.medical.*;
+import org.example.entablebe.repository.*;
 import org.example.entablebe.utils.AppUtils;
 import org.example.entablebe.utils.HibernateUtils;
+import org.example.entablebe.utils.assemblers.MedicalNotesAssembler;
 import org.example.entablebe.utils.assemblers.PatientAssembler;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -36,7 +32,10 @@ public class MedicalServiceImpl implements MedicalService {
     private final UserRepository userRepository;
     private final MedicalRepository medicalRepository;
     private final TreatmentRepository treatmentRepository;
+    private final MedicalNoteRepository medicalNoteRepository;
+
     private final PatientAssembler patientAssembler;
+    private final MedicalNotesAssembler medicalNotesAssembler;
 
     private final Comparator<Treatment> treatmentComparator = Comparator.comparing(Treatment::getInsertDate);
 
@@ -217,6 +216,30 @@ public class MedicalServiceImpl implements MedicalService {
         diseaseRepository.delete(diseaseById);
         logger.debug("Finish deleting disease with id: {}", diseaseId);
         return true;
+    }
+
+    @Override
+    @Transactional
+    public MedicalNoteDto addNewNote(MedicalNoteDto dto, Long diseaseId) {
+        UserEntangle currentUser = (UserEntangle) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        MedicalNote entity = medicalNotesAssembler.assemble(dto);
+        entity.setCreatedBy(currentUser);
+
+        MedicalNote savedNote = medicalNoteRepository.save(entity);
+        Disease disease = diseaseRepository.loadDiseaseWithMedicalNotes(diseaseId);
+        disease.addMedicalNote(savedNote);
+        diseaseRepository.save(disease);
+
+        return medicalNotesAssembler.assemble(savedNote);
+    }
+
+    @Override
+    public List<MedicalNoteDto> getAllNotesForDisease(Long diseaseId) {
+        return diseaseRepository.loadDiseaseWithMedicalNotes(diseaseId)
+                .getMedicalNotes()
+                .stream()
+                .map(medicalNotesAssembler::assemble)
+                .toList();
     }
 
     private List<TreatmentDto> mapTreatmentForDisease(Disease disease) {

@@ -16,10 +16,14 @@ public class MedicalNote {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "medical_note_sequence_generator")
     private Long id;
 
-    @Column(name = "note")
-    private String note;
+    @Column(name = "note_content")
+    private String noteContent;
 
     @Column(name = "created_date")
     private Date createdDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserEntangle createdBy;
 
 }

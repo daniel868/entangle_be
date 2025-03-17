@@ -1,5 +1,6 @@
 package org.example.entablebe.controller;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.example.entablebe.pojo.contact.ContactRequest;
 import org.example.entablebe.pojo.generic.GenericSuccessResponse;
 import org.example.entablebe.service.ContactService;
@@ -19,6 +20,7 @@ public class PatientController {
     }
 
     @RequestMapping(value = "/contact", method = RequestMethod.POST)
+    @RateLimiter(name = "newContactInitialize")
     public GenericSuccessResponse<Boolean> newContactInitialize(@RequestBody ContactRequest contactRequest) {
         boolean response = contactService.addNewContact(contactRequest);
         return new GenericSuccessResponse<>(response);

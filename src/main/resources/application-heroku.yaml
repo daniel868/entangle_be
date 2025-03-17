@@ -49,3 +49,11 @@ cypher:
 
 base:
   path: ${BASE_PATH}
+
+resilience4j:
+  ratelimiter:
+    configs:
+      default:
+        limitForPeriod: 10
+        limitRefreshPeriod: 5s
+        timeoutDuration: 100ms

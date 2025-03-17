@@ -33,7 +33,7 @@ public class EmailServiceImpl implements EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(smtpUsername);
         message.setTo(toEmail);
-        message.setSubject("Email activation test from Springboot");
+        message.setSubject("Entangle Email activation");
 
         StringBuilder emailTemplate = new StringBuilder();
         emailTemplate.append("Hello\n");
@@ -56,7 +56,7 @@ public class EmailServiceImpl implements EmailService {
         message.setFrom(smtpUsername);
         message.setTo(toEmail);
 
-        message.setSubject("Password reset link test from Springboot");
+        message.setSubject("Entangle Reset Password");
 
         StringBuilder emailTemplate = new StringBuilder();
         emailTemplate.append("Hello\n");

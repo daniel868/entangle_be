@@ -1,5 +1,6 @@
 package org.example.entablebe.controller;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.example.entablebe.pojo.auth.ActivateEmailResponse;
 import org.example.entablebe.pojo.auth.LoginRequest;
 import org.example.entablebe.pojo.auth.RegisterRequest;
@@ -23,6 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @RateLimiter(name = "registerNewUser")
     public Object registerNewUser(@RequestBody RegisterRequest registerRequest) {
         Jsoup.clean(registerRequest.toString(), Safelist.basic());
         return authService.registerUser(registerRequest);
@@ -35,12 +37,14 @@ public class AuthController {
     }
 
     @PostMapping("/activate")
+    @RateLimiter(name = "activateAccount")
     public Object activateAccount(@RequestBody ActivateEmailResponse response) {
         Jsoup.clean(response.toString(), Safelist.basic());
         return authService.activateUserAccount(response.getEmailToken());
     }
 
     @PostMapping("/sendResetPasswordLink")
+    @RateLimiter(name = "resetAccountPasswordStep1")
     public Object resetAccountPasswordStep1(@RequestParam String emailAddress) {
         Jsoup.clean(emailAddress, Safelist.basic());
         boolean emailSent = authService.sendResetAccountPassword(emailAddress);
@@ -50,6 +54,7 @@ public class AuthController {
     }
 
     @PostMapping("/resetAccountPassword")
+    @RateLimiter(name = "resectAccountPassword")
     public Object resectAccountPassword(@RequestBody ResetPasswordRequest request) {
         Jsoup.clean(request.toString(), Safelist.basic());
         boolean passwordChanged = authService.resetAccountPassword(request);

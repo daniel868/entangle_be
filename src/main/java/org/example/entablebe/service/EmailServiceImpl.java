@@ -7,6 +7,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 @Service
@@ -69,6 +70,30 @@ public class EmailServiceImpl implements EmailService {
             logger.info("Sending reset link for email: {}", toEmail);
             mailSender.send(message);
             logger.info("Finish sending reset link for email: {}", toEmail);
+        });
+    }
+
+    @Override
+    public void notifyTechnicalException(Exception exception) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(smtpUsername);
+        message.setTo(smtpUsername);
+
+        message.setSubject("Entangle Technical Error");
+        StringBuilder emailTemplate = new StringBuilder();
+        emailTemplate.append("Technical Error found\n");
+        emailTemplate.append(exception.getMessage());
+
+        message.setText(emailTemplate.toString());
+
+        CompletableFuture<Void> asyncEmailFuture = CompletableFuture.runAsync(() -> {
+            mailSender.send(message);
+        }, executorService);
+
+        asyncEmailFuture.whenComplete((result, error) -> {
+            if (error != null) {
+                logger.error("Error while sending email", error);
+            }
         });
     }
 

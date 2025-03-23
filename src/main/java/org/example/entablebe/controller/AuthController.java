@@ -1,5 +1,6 @@
 package org.example.entablebe.controller;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.example.entablebe.pojo.auth.ActivateEmailResponse;
 import org.example.entablebe.pojo.auth.LoginRequest;
@@ -31,6 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @CircuitBreaker(name = "login")
     public Object login(@RequestBody LoginRequest loginRequest) {
         Jsoup.clean(loginRequest.toString(), Safelist.basic());
         return authService.loginUser(loginRequest);

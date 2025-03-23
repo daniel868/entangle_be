@@ -57,3 +57,12 @@ resilience4j:
         limitForPeriod: 10
         limitRefreshPeriod: 5s
         timeoutDuration: 100ms
+  circuitbreaker:
+    configs:
+      default:
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        waitDurationInOpenState:
+          seconds: 5
+        slidingWindowSize: 5
+        slidingWindowType: TIME_BASED
